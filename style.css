@@ -383,7 +383,8 @@ body {
     min-width: 0;
 }
 
-.task-delete {
+.task-delete,
+.task-edit {
     display: grid;
     place-items: center;
     flex-shrink: 0;
@@ -402,6 +403,17 @@ body {
     color: #dc3545;
 }
 
+.task-edit:focus-visible,
+.task-delete:focus-visible {
+    outline: 3px solid var(--tf-primary);
+    outline-offset: 3px;
+}
+
+.task-edit:hover {
+    background: var(--tf-hover);
+    color: var(--tf-primary);
+}
+
 [data-bs-theme="dark"] .task-delete:hover {
     color: #ffa3ab;
 }
@@ -409,4 +421,28 @@ body {
 .task-delete:focus-visible {
     outline: 3px solid var(--tf-primary);
     outline-offset: 3px;
+}
+
+/* ==================================
+   SPRINT 03 - EDIÇÃO DE TAREFAS
+================================== */
+
+.task-item.is-editing > .task-label,
+.task-item.is-editing > .task-edit,
+.task-item.is-editing > .task-delete {
+    display: none;
+}
+
+.task-edit-area {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+}
+
+.task-edit-input {
+    flex: 1;
+    min-width: 160px;
 }

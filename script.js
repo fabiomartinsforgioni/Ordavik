@@ -240,6 +240,28 @@ function createTaskElement(task) {
         refreshTaskUI();
     });
 
+    // Criação do botão de edição
+    const editButton = document.createElement("button");
+
+    editButton.type = "button";
+    editButton.classList.add("task-edit");
+
+    editButton.setAttribute(
+    "aria-label",
+    "Editar tarefa: " + task.description
+);
+
+// Criação do ícone de edição
+    const editIcon = document.createElement("i");
+
+    editIcon.className = "bi bi-pencil-square";
+
+    editIcon.setAttribute("aria-hidden", "true");
+
+    editButton.appendChild(editIcon);
+
+    editButton.title = "Editar tarefa";
+
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
     deleteButton.classList.add("task-delete");
@@ -261,7 +283,107 @@ function createTaskElement(task) {
         refreshTaskUI();
     });
 
-    item.append(label, deleteButton);
+    editButton.addEventListener("click", function () {
+
+    // Evita abrir dois campos de edição na mesma tarefa.
+    if (item.classList.contains("is-editing")) return;
+
+    // Cria o campo que receberá a nova descrição.
+    const editInput = document.createElement("input");
+
+    editInput.type = "text";
+    editInput.className = "form-control task-edit-input";
+    editInput.value = task.description;
+    editInput.maxLength = 140;
+    editInput.required = true;
+
+    // Cria o botão Salvar.
+    const saveButton = document.createElement("button");
+
+    saveButton.type = "button";
+    saveButton.className = "btn btn-primary btn-sm";
+    saveButton.textContent = "Salvar";
+
+    // Cria o botão Cancelar.
+    const cancelButton = document.createElement("button");
+
+    cancelButton.type = "button";
+    cancelButton.className = "btn btn-outline-secondary btn-sm";
+    cancelButton.textContent = "Cancelar";
+
+    // Agrupa o campo e os botões.
+    const editArea = document.createElement("div");
+
+    editArea.className = "task-edit-area";
+    editArea.append(editInput, saveButton, cancelButton);
+
+    // Finaliza a edição e restaura a aparência da tarefa.
+    function finishEditing() {
+        item.classList.remove("is-editing");
+        editArea.remove();
+        editButton.focus();
+    }
+
+    // Salva a nova descrição.
+    function saveEditing() {
+
+        const updatedDescription = editInput.value.trim();
+
+        if (updatedDescription === "") {
+            editInput.setCustomValidity("A descrição não pode ficar vazia.");
+            editInput.reportValidity();
+            return;
+        }
+
+        task.description = updatedDescription;
+        taskText.textContent = updatedDescription;
+
+        editButton.setAttribute(
+            "aria-label",
+            "Editar tarefa: " + updatedDescription
+        );
+
+        deleteButton.setAttribute(
+            "aria-label",
+            "Excluir tarefa: " + updatedDescription
+        );
+
+        saveTasks();
+        finishEditing();
+    }
+
+    editInput.addEventListener("input", function () {
+        editInput.setCustomValidity("");
+    });
+
+    // Configura os eventos dos botões.
+    saveButton.addEventListener("click", saveEditing);
+    cancelButton.addEventListener("click", finishEditing);
+
+    // Atalhos de teclado.
+    editInput.addEventListener("keydown", function (event) {
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+            saveEditing();
+        }
+
+        if (event.key === "Escape") {
+            finishEditing();
+        }
+
+    });
+
+    // Ativa o modo de edição.
+    item.classList.add("is-editing");
+    item.appendChild(editArea);
+
+    editInput.focus();
+    editInput.select();
+
+});
+
+    item.append(label, editButton, deleteButton);
     return item;
 }
 
