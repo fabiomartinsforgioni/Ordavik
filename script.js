@@ -161,7 +161,7 @@ function refreshTaskUI() {
 }
 
 // ==================================
-// CADASTRO E CONCLUSÃO DE TAREFAS
+// CADASTRO, CONCLUSÃO E EXCLUSÃO
 // ==================================
 
 form.addEventListener("submit", function (event) {
@@ -190,10 +190,26 @@ form.addEventListener("submit", function (event) {
         refreshTaskUI();
     });
 
-    item.appendChild(label);
+    // Botão independente do label para não marcar a tarefa ao excluir.
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.classList.add("task-delete");
+    deleteButton.setAttribute("aria-label", "Excluir tarefa: " + tarefa);
+    deleteButton.title = "Excluir tarefa";
+
+    const deleteIcon = document.createElement("i");
+    deleteIcon.className = "bi bi-trash3";
+    deleteIcon.setAttribute("aria-hidden", "true");
+    deleteButton.appendChild(deleteIcon);
+
+    deleteButton.addEventListener("click", function () {
+        item.remove();
+        refreshTaskUI();
+    });
+
+    item.append(label, deleteButton);
     taskList.appendChild(item);
 
-    // Exibe a tarefa recém-criada mesmo se outro filtro estiver selecionado.
     setFilter("all");
     refreshTaskUI();
 
@@ -201,5 +217,4 @@ form.addEventListener("submit", function (event) {
     input.focus();
 });
 
-// Estado inicial: sem tarefas persistidas nesta sprint.
 refreshTaskUI();
