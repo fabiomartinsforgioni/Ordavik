@@ -27,7 +27,7 @@ A aplicação será aprimorada continuamente, recebendo novas funcionalidades e 
 
 ### Próximas funcionalidades
 
-* [ ] Marcar tarefas como concluídas
+* [x] Marcar tarefas como concluídas
 * [ ] Excluir tarefas
 * [ ] Armazenar tarefas com LocalStorage
 * [ ] Editar tarefas
