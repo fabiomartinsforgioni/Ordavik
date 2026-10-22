@@ -13,6 +13,8 @@ Gerenciador de tarefas desenvolvido para praticar **HTML, CSS, JavaScript, Boots
 
 - [x] Cadastro de tarefas
 - [x] Marcar e desmarcar tarefas como concluídas
+- [x] Excluir tarefas individualmente, atualizando filtros e indicadores
+- [x] Persistir tarefas e seus estados no `localStorage`
 - [x] Layout responsivo com navegação lateral
 - [x] Tela **Início** com total, pendentes, concluídas e barra de progresso
 - [x] Tela **Minhas tarefas** com filtros **Todas**, **Pendentes** e **Concluídas**
@@ -21,14 +23,12 @@ Gerenciador de tarefas desenvolvido para praticar **HTML, CSS, JavaScript, Boots
 
 ## 🧭 Próximas funcionalidades
 
-- [ ] Exclusão de tarefas
-- [ ] Persistência das tarefas no `localStorage`
 - [ ] Edição de tarefas
 - [ ] Categorias e prioridades
 - [ ] Dashboard de produtividade avançado
 - [ ] Quadro Kanban
 
-> **Atenção:** por enquanto, apenas a preferência de tema é armazenada. As tarefas são mantidas em memória e desaparecem ao atualizar a página.
+> **Atenção:** tarefas e preferência de tema ficam no `localStorage` deste navegador, sem sincronização entre dispositivos. Se o armazenamento estiver indisponível, o TaskFlow ainda funciona durante a sessão, mas não consegue preservar as tarefas.
 
 ## 📁 Estrutura
 
@@ -53,8 +53,11 @@ TaskFlow/
 2. Conclua uma delas. Os indicadores devem mostrar **1 pendente** e **1 concluída**, com **50%** de progresso.
 3. Confira os filtros **Todas**, **Pendentes** e **Concluídas**.
 4. Com o filtro **Concluídas** ativo, volte a tarefa para pendente: ela deve desaparecer desse filtro.
-5. Alterne os temas e atualize a página: o tema deve permanecer salvo.
-6. Teste a navegação e os filtros pelo teclado, e o layout em janela estreita.
+5. Exclua uma tarefa concluída e confira os indicadores, filtros e estado vazio.
+6. Atualize a página e confira se as tarefas restantes e seus estados continuam salvos.
+7. Exclua uma tarefa, atualize a página e confira se ela não retorna.
+8. Alterne os temas e atualize a página: o tema também deve permanecer salvo.
+9. Teste a navegação e os filtros pelo teclado, e o layout em janela estreita.
 
 ## 📈 Metodologia
 

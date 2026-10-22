@@ -17,6 +17,57 @@ const emptyStateText = document.querySelector("#empty-state-text");
 let activeFilter = "all";
 
 // ==================================
+// ARMAZENAMENTO DAS TAREFAS
+// ==================================
+
+const TASKS_STORAGE_KEY = "taskflow-tasks";
+let tasks = loadTasks();
+
+function loadTasks() {
+    try {
+        const raw = localStorage.getItem(TASKS_STORAGE_KEY);
+        if (raw === null) return [];
+
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+
+        const seenIds = new Set();
+
+        // Ignora entradas inválidas: armazenamento do navegador não é confiável.
+        return parsed.filter(function (task) {
+            if (!task || typeof task !== "object") return false;
+            if (typeof task.id !== "string" || task.id.length === 0 || seenIds.has(task.id)) return false;
+            if (typeof task.description !== "string" || task.description.trim().length === 0 || task.description.length > 140) return false;
+            if (typeof task.completed !== "boolean") return false;
+
+            seenIds.add(task.id);
+            return true;
+        });
+    } catch {
+        // Falha de leitura, conteúdo inválido ou bloqueio do armazenamento.
+        return [];
+    }
+}
+
+function saveTasks() {
+    try {
+        localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+    } catch {
+        // A aplicação continua funcionando apenas em memória se não puder salvar.
+        console.warn("TaskFlow: não foi possível armazenar as tarefas neste navegador.");
+    }
+}
+
+function generateTaskId() {
+    // randomUUID pode não estar disponível em alguns contextos locais (file://).
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+    }
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 11);
+}
+
+
+// ==================================
 // TEMA CLARO / ESCURO
 // ==================================
 
@@ -161,39 +212,76 @@ function refreshTaskUI() {
 }
 
 // ==================================
-// CADASTRO E CONCLUSÃO DE TAREFAS
+// CADASTRO, CONCLUSÃO E EXCLUSÃO
 // ==================================
 
-form.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const tarefa = input.value.trim();
-    if (tarefa === "") return;
-
+function createTaskElement(task) {
     const item = document.createElement("li");
     item.classList.add("task-item");
+    item.classList.toggle("completed", task.completed);
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.classList.add("task-checkbox");
+    checkbox.checked = task.completed;
 
     const taskText = document.createElement("span");
     taskText.classList.add("task-text");
-    taskText.textContent = tarefa;
+    taskText.textContent = task.description;
 
     const label = document.createElement("label");
     label.classList.add("task-label");
     label.append(checkbox, taskText);
 
     checkbox.addEventListener("change", function () {
-        item.classList.toggle("completed", checkbox.checked);
+        task.completed = checkbox.checked;
+        item.classList.toggle("completed", task.completed);
+        saveTasks();
         refreshTaskUI();
     });
 
-    item.appendChild(label);
-    taskList.appendChild(item);
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.classList.add("task-delete");
+    deleteButton.setAttribute("aria-label", "Excluir tarefa: " + task.description);
+    deleteButton.title = "Excluir tarefa";
 
-    // Exibe a tarefa recém-criada mesmo se outro filtro estiver selecionado.
+    const deleteIcon = document.createElement("i");
+    deleteIcon.className = "bi bi-trash3";
+    deleteIcon.setAttribute("aria-hidden", "true");
+    deleteButton.appendChild(deleteIcon);
+
+    deleteButton.addEventListener("click", function () {
+        // O id identifica a tarefa, mesmo que existam descrições repetidas.
+        tasks = tasks.filter(function (savedTask) {
+            return savedTask.id !== task.id;
+        });
+        item.remove();
+        saveTasks();
+        refreshTaskUI();
+    });
+
+    item.append(label, deleteButton);
+    return item;
+}
+
+form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const description = input.value.trim();
+    if (description === "") return;
+
+    const task = {
+        id: generateTaskId(),
+        description: description,
+        completed: false
+    };
+
+    tasks.push(task);
+    taskList.appendChild(createTaskElement(task));
+    saveTasks();
+
+    // Exibe a tarefa recém-criada, mesmo quando outro filtro está ativo.
     setFilter("all");
     refreshTaskUI();
 
@@ -201,5 +289,8 @@ form.addEventListener("submit", function (event) {
     input.focus();
 });
 
-// Estado inicial: sem tarefas persistidas nesta sprint.
+// Reconstrói as tarefas salvas e atualiza o painel sem recarregar a página.
+tasks.forEach(function (task) {
+    taskList.appendChild(createTaskElement(task));
+});
 refreshTaskUI();
