@@ -162,6 +162,16 @@
                             autocomplete="off"
                             required
                         >
+                        <!-- Prioridade selecionada ao cadastrar uma tarefa. -->
+                        <label for="task-priority" class="visually-hidden">
+                            Prioridade da tarefa
+                        </label>
+                        <select id="task-priority" class="form-select task-priority-select">
+                            <option value="low">Baixa</option>
+                            <option value="medium" selected>Média</option>
+                            <option value="high">Alta</option>
+                        </select>
+
                         <button type="submit" class="btn btn-primary add-button">
                             <i class="bi bi-plus-lg" aria-hidden="true"></i>
                             Adicionar
