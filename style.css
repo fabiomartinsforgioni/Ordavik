@@ -584,6 +584,46 @@ body {
     font-size: 14px;
 }
 
+/* ==================================================
+   SPRINT 04 | PESQUISA DE TAREFAS
+   ================================================== */
+
+/*
+ * Contêiner do campo de pesquisa.
+ * O espaçamento separa a pesquisa do formulário
+ * utilizado para cadastrar novas tarefas.
+ */
+.task-search {
+    margin-top: 24px;
+}
+
+/*
+ * Personaliza o campo de pesquisa utilizando
+ * as variáveis de cores do tema atual.
+ */
+.task-search-input.form-control {
+    width: 100%;
+    padding: 12px 14px;
+
+    border: 1px solid var(--tf-border);
+    border-radius: 10px;
+
+    background: var(--tf-surface-alt);
+    color: var(--tf-text);
+}
+
+/*
+ * Destaca o campo quando recebe foco.
+ */
+.task-search-input.form-control:focus {
+    border-color: #3b82f6;
+
+    background: var(--tf-surface-alt);
+    color: var(--tf-text);
+
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
 /* ---------------------------------------------------------------------------
    8. EDIÇÃO EM LINHA
    --------------------------------------------------------------------------- */

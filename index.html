@@ -1,247 +1,296 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
+  <head>
     <!-- Metadados: idioma, caracteres, viewport e descrição para buscadores. -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TaskFlow: organize suas tarefas e acompanhe sua produtividade.">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="TaskFlow: organize suas tarefas e acompanhe sua produtividade."
+    />
     <title>TaskFlow | Gerenciador de Tarefas</title>
 
     <!-- Aplica a preferência salva antes do CSS, evitando piscar o tema claro. -->
     <script>
-        try {
-            const savedTheme = localStorage.getItem("taskflow-theme");
-            document.documentElement.setAttribute(
-                "data-bs-theme",
-                savedTheme === "dark" ? "dark" : "light"
-            );
-        } catch {
-            document.documentElement.setAttribute("data-bs-theme", "light");
-        }
+      try {
+        const savedTheme = localStorage.getItem("taskflow-theme");
+        document.documentElement.setAttribute(
+          "data-bs-theme",
+          savedTheme === "dark" ? "dark" : "light",
+        );
+      } catch {
+        document.documentElement.setAttribute("data-bs-theme", "light");
+      }
     </script>
 
     <!-- Bootstrap e ícones via CDN: carregados antes dos nossos estilos. -->
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-        crossorigin="anonymous"
-    >
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
     <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css"
-    >
-    <link rel="stylesheet" href="style.css">
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
 
     <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"
-        defer
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+      defer
     ></script>
     <!-- defer executa o JavaScript após o HTML ser interpretado. -->
     <script src="script.js" defer></script>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Contêiner principal: limita a largura e mantém a interface centralizada. -->
     <div class="app-shell">
-        <!-- Cabeçalho com identidade visual e botão para trocar o tema. -->
-        <header class="app-header">
-            <div class="app-brand">
-                <div class="app-logo" aria-hidden="true">
-                    <i class="bi bi-check2-square"></i>
-                </div>
-                <div class="app-title">
-                    <h1>TaskFlow</h1>
-                    <p>Seu espaço de produtividade</p>
-                </div>
+      <!-- Cabeçalho com identidade visual e botão para trocar o tema. -->
+      <header class="app-header">
+        <div class="app-brand">
+          <div class="app-logo" aria-hidden="true">
+            <i class="bi bi-check2-square"></i>
+          </div>
+          <div class="app-title">
+            <h1>TaskFlow</h1>
+            <p>Seu espaço de produtividade</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          id="theme-toggle"
+          class="btn theme-toggle"
+          aria-label="Ativar modo escuro"
+          aria-pressed="false"
+          title="Alternar tema"
+        >
+          <i class="bi bi-moon-stars" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="app-layout">
+        <!-- Navegação: data-view-target indica qual painel o JS deve abrir. -->
+        <aside class="app-sidebar">
+          <p class="sidebar-caption">NAVEGAÇÃO</p>
+          <nav class="sidebar-nav" aria-label="Navegação principal">
+            <button
+              type="button"
+              class="sidebar-link is-active"
+              data-view-target="home"
+              aria-current="page"
+            >
+              <i class="bi bi-house-door" aria-hidden="true"></i>
+              <span>Início</span>
+            </button>
+            <button type="button" class="sidebar-link" data-view-target="tasks">
+              <i class="bi bi-check2-square" aria-hidden="true"></i>
+              <span>Minhas tarefas</span>
+            </button>
+          </nav>
+        </aside>
+
+        <main class="app-content" id="main-content">
+          <!-- Os painéis são alternados pelo JavaScript, sem recarregar a página. -->
+          <!-- Painel inicial: indicadores calculados por refreshTaskUI(). -->
+          <section
+            class="app-view"
+            id="view-home"
+            data-view-panel="home"
+            aria-labelledby="home-heading"
+          >
+            <div class="section-heading">
+              <p class="eyebrow">PAINEL GERAL</p>
+              <h2 id="home-heading" tabindex="-1">Seu dia em foco</h2>
+              <p>Veja seu progresso e mantenha suas atividades sob controle.</p>
             </div>
 
-            <button
+            <!-- Grid responsivo do Bootstrap: 1 coluna no celular, 3 no desktop. -->
+            <div class="row g-3 mb-4">
+              <div class="col-12 col-md-4">
+                <article class="stat-card stat-card-total">
+                  <span class="stat-icon" aria-hidden="true"
+                    ><i class="bi bi-list-task"></i
+                  ></span>
+                  <p>Total de tarefas</p>
+                  <strong id="summary-total">0</strong>
+                </article>
+              </div>
+              <div class="col-12 col-md-4">
+                <article class="stat-card stat-card-pending">
+                  <span class="stat-icon" aria-hidden="true"
+                    ><i class="bi bi-hourglass-split"></i
+                  ></span>
+                  <p>Pendentes</p>
+                  <strong id="summary-pending">0</strong>
+                </article>
+              </div>
+              <div class="col-12 col-md-4">
+                <article class="stat-card stat-card-completed">
+                  <span class="stat-icon" aria-hidden="true"
+                    ><i class="bi bi-check2-circle"></i
+                  ></span>
+                  <p>Concluídas</p>
+                  <strong id="summary-completed">0</strong>
+                </article>
+              </div>
+            </div>
+
+            <div class="overview-card">
+              <div class="overview-heading">
+                <h3>Seu progresso</h3>
+                <span id="progress-label">0% concluído</span>
+              </div>
+              <div
+                class="progress"
+                role="progressbar"
+                aria-label="Porcentagem de tarefas concluídas"
+                aria-valuenow="0"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                id="progress-track"
+              >
+                <div
+                  class="progress-bar"
+                  id="progress-bar"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <p id="home-status" aria-live="polite">
+                Você ainda não cadastrou tarefas.
+              </p>
+              <button
                 type="button"
-                id="theme-toggle"
-                class="btn theme-toggle"
-                aria-label="Ativar modo escuro"
-                aria-pressed="false"
-                title="Alternar tema"
-            >
-                <i class="bi bi-moon-stars" aria-hidden="true"></i>
-            </button>
-        </header>
+                class="btn btn-primary"
+                data-view-target="tasks"
+              >
+                <i class="bi bi-arrow-right-circle me-1" aria-hidden="true"></i>
+                Gerenciar tarefas
+              </button>
+            </div>
+          </section>
 
-        <div class="app-layout">
-            <!-- Navegação: data-view-target indica qual painel o JS deve abrir. -->
-            <aside class="app-sidebar">
-                <p class="sidebar-caption">NAVEGAÇÃO</p>
-                <nav class="sidebar-nav" aria-label="Navegação principal">
-                    <button
-                        type="button"
-                        class="sidebar-link is-active"
-                        data-view-target="home"
-                        aria-current="page"
-                    >
-                        <i class="bi bi-house-door" aria-hidden="true"></i>
-                        <span>Início</span>
-                    </button>
-                    <button
-                        type="button"
-                        class="sidebar-link"
-                        data-view-target="tasks"
-                    >
-                        <i class="bi bi-check2-square" aria-hidden="true"></i>
-                        <span>Minhas tarefas</span>
-                    </button>
-                </nav>
-            </aside>
+          <!-- Painel de tarefas: começa oculto; o JS alterna o hidden. -->
+          <section
+            class="app-view"
+            id="view-tasks"
+            data-view-panel="tasks"
+            aria-labelledby="tasks-heading"
+            hidden
+          >
+            <div class="section-heading">
+              <p class="eyebrow">ORGANIZAÇÃO</p>
+              <h2 id="tasks-heading" tabindex="-1">Minhas tarefas</h2>
+              <p>Adicione atividades e acompanhe o que já foi feito.</p>
+            </div>
 
-            <main class="app-content" id="main-content">
-                <!-- Os painéis são alternados pelo JavaScript, sem recarregar a página. -->
-                <!-- Painel inicial: indicadores calculados por refreshTaskUI(). -->
-                <section
-                    class="app-view"
-                    id="view-home"
-                    data-view-panel="home"
-                    aria-labelledby="home-heading"
+            <!-- Submit: o JS cria um objeto tarefa e impede o recarregamento. -->
+            <form id="task-form" class="task-form">
+              <!-- O rótulo continua acessível mesmo estando invisível na tela. -->
+              <label class="visually-hidden" for="task-input"
+                >Nova tarefa</label
+              >
+              <input
+                type="text"
+                class="form-control task-input"
+                id="task-input"
+                placeholder="Digite uma nova tarefa"
+                maxlength="140"
+                autocomplete="off"
+                required
+              />
+              <!-- Prioridade selecionada ao cadastrar uma tarefa. -->
+              <label for="task-priority" class="visually-hidden">
+                Prioridade da tarefa
+              </label>
+              <!-- Os valores low/medium/high são persistidos no objeto da tarefa. -->
+              <select
+                id="task-priority"
+                class="form-select task-priority-select"
+              >
+                <option value="low">Baixa</option>
+                <option value="medium" selected>Média</option>
+                <option value="high">Alta</option>
+              </select>
+
+              <button type="submit" class="btn btn-primary add-button">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Adicionar
+              </button>
+            </form>
+<!-- ==================================================
+     SPRINT 04 | PESQUISA DE TAREFAS
+     Permite localizar tarefas pela descrição.
+     A pesquisa será processada pelo JavaScript.
+================================================== -->
+
+            <div class="task-search">
+              <label for="task-search" class="form-label">
+                Buscar tarefas
+              </label>
+
+              <input
+                type="search"
+                id="task-search"
+                class="form-control task-search-input"
+                placeholder="Digite para pesquisar tarefas..."
+                autocomplete="off"
+              />
+            </div>
+            <!-- Filtros: data-filter é lido por setFilter() no JavaScript. -->
+            <div class="task-toolbar">
+              <h3>
+                Atividades
+                <span id="task-total-badge" class="task-badge">0</span>
+              </h3>
+              <div
+                class="task-filters"
+                role="group"
+                aria-label="Filtrar tarefas por situação"
+              >
+                <button
+                  type="button"
+                  class="filter-button is-active"
+                  data-filter="all"
+                  aria-pressed="true"
                 >
-                    <div class="section-heading">
-                        <p class="eyebrow">PAINEL GERAL</p>
-                        <h2 id="home-heading" tabindex="-1">Seu dia em foco</h2>
-                        <p>Veja seu progresso e mantenha suas atividades sob controle.</p>
-                    </div>
-
-                    <!-- Grid responsivo do Bootstrap: 1 coluna no celular, 3 no desktop. -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-12 col-md-4">
-                            <article class="stat-card stat-card-total">
-                                <span class="stat-icon" aria-hidden="true"><i class="bi bi-list-task"></i></span>
-                                <p>Total de tarefas</p>
-                                <strong id="summary-total">0</strong>
-                            </article>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <article class="stat-card stat-card-pending">
-                                <span class="stat-icon" aria-hidden="true"><i class="bi bi-hourglass-split"></i></span>
-                                <p>Pendentes</p>
-                                <strong id="summary-pending">0</strong>
-                            </article>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <article class="stat-card stat-card-completed">
-                                <span class="stat-icon" aria-hidden="true"><i class="bi bi-check2-circle"></i></span>
-                                <p>Concluídas</p>
-                                <strong id="summary-completed">0</strong>
-                            </article>
-                        </div>
-                    </div>
-
-                    <div class="overview-card">
-                        <div class="overview-heading">
-                            <h3>Seu progresso</h3>
-                            <span id="progress-label">0% concluído</span>
-                        </div>
-                        <div
-                            class="progress"
-                            role="progressbar"
-                            aria-label="Porcentagem de tarefas concluídas"
-                            aria-valuenow="0"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                            id="progress-track"
-                        >
-                            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
-                        </div>
-                        <p id="home-status" aria-live="polite">Você ainda não cadastrou tarefas.</p>
-                        <button type="button" class="btn btn-primary" data-view-target="tasks">
-                            <i class="bi bi-arrow-right-circle me-1" aria-hidden="true"></i>
-                            Gerenciar tarefas
-                        </button>
-                    </div>
-                </section>
-
-                <!-- Painel de tarefas: começa oculto; o JS alterna o hidden. -->
-                <section
-                    class="app-view"
-                    id="view-tasks"
-                    data-view-panel="tasks"
-                    aria-labelledby="tasks-heading"
-                    hidden
+                  Todas
+                </button>
+                <button
+                  type="button"
+                  class="filter-button"
+                  data-filter="pending"
+                  aria-pressed="false"
                 >
-                    <div class="section-heading">
-                        <p class="eyebrow">ORGANIZAÇÃO</p>
-                        <h2 id="tasks-heading" tabindex="-1">Minhas tarefas</h2>
-                        <p>Adicione atividades e acompanhe o que já foi feito.</p>
-                    </div>
+                  Pendentes
+                </button>
+                <button
+                  type="button"
+                  class="filter-button"
+                  data-filter="completed"
+                  aria-pressed="false"
+                >
+                  Concluídas
+                </button>
+              </div>
+            </div>
 
-                    <!-- Submit: o JS cria um objeto tarefa e impede o recarregamento. -->
-                    <form id="task-form" class="task-form">
-                        <!-- O rótulo continua acessível mesmo estando invisível na tela. -->
-                        <label class="visually-hidden" for="task-input">Nova tarefa</label>
-                        <input
-                            type="text"
-                            class="form-control task-input"
-                            id="task-input"
-                            placeholder="Digite uma nova tarefa"
-                            maxlength="140"
-                            autocomplete="off"
-                            required
-                        >
-                        <!-- Prioridade selecionada ao cadastrar uma tarefa. -->
-                        <label for="task-priority" class="visually-hidden">
-                            Prioridade da tarefa
-                        </label>
-                        <!-- Os valores low/medium/high são persistidos no objeto da tarefa. -->
-                        <select id="task-priority" class="form-select task-priority-select">
-                            <option value="low">Baixa</option>
-                            <option value="medium" selected>Média</option>
-                            <option value="high">Alta</option>
-                        </select>
+            <!-- Lista vazia no HTML: createTaskElement() gera cada <li>. -->
+            <ul id="task-list" aria-label="Lista de tarefas"></ul>
 
-                        <button type="submit" class="btn btn-primary add-button">
-                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                            Adicionar
-                        </button>
-                    </form>
-
-                    <!-- Filtros: data-filter é lido por setFilter() no JavaScript. -->
-                    <div class="task-toolbar">
-                        <h3>Atividades <span id="task-total-badge" class="task-badge">0</span></h3>
-                        <div
-                            class="task-filters"
-                            role="group"
-                            aria-label="Filtrar tarefas por situação"
-                        >
-                            <button
-                                type="button"
-                                class="filter-button is-active"
-                                data-filter="all"
-                                aria-pressed="true"
-                            >Todas</button>
-                            <button
-                                type="button"
-                                class="filter-button"
-                                data-filter="pending"
-                                aria-pressed="false"
-                            >Pendentes</button>
-                            <button
-                                type="button"
-                                class="filter-button"
-                                data-filter="completed"
-                                aria-pressed="false"
-                            >Concluídas</button>
-                        </div>
-                    </div>
-
-                    <!-- Lista vazia no HTML: createTaskElement() gera cada <li>. -->
-                    <ul id="task-list" aria-label="Lista de tarefas"></ul>
-
-                    <div class="empty-state" id="empty-state" role="status">
-                        <i class="bi bi-clipboard-check" aria-hidden="true"></i>
-                        <!-- Mensagem que muda conforme o filtro e a quantidade de tarefas. -->
-                        <p id="empty-state-text">Nenhuma tarefa cadastrada. Que tal começar?</p>
-                    </div>
-                </section>
-            </main>
-        </div>
+            <div class="empty-state" id="empty-state" role="status">
+              <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+              <!-- Mensagem que muda conforme o filtro e a quantidade de tarefas. -->
+              <p id="empty-state-text">
+                Nenhuma tarefa cadastrada. Que tal começar?
+              </p>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
-</body>
+  </body>
 </html>
