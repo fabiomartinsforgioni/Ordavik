@@ -25,8 +25,10 @@ Usar com profissionais que dividem demandas entre clientes e projetos. Verificar
 5. Implementar times, permissões e histórico compartilhado quando necessários.
 6. Definir planos e integrar cobrança em ambiente de testes antes da publicação.
 
-## Marca e repositório
+## Marca, repositório e publicação
 
-Nome escolhido: Ordavik. Ainda requer verificação de marca, domínio e perfis. O repositório remoto continua com o endereço anterior. Renomeá-lo exige acesso de administração e revisão dos endereços de publicação/integrações. Antes de uma mudança de origem, exportar os dados do endereço antigo.
+Nome do projeto: **Ordavik**. O repositório foi renomeado e está disponível em [fabiomartinsforgioni/Ordavik](https://github.com/fabiomartinsforgioni/Ordavik), com o histórico anterior do TaskFlow preservado.
 
-Esta versão não foi publicada nem teve commits/push automáticos.
+A verificação de disponibilidade de marca, domínio e perfis públicos ainda é necessária antes de uso comercial. O código está no GitHub, mas a disponibilização da aplicação como site publicado (por exemplo, GitHub Pages) permanece uma etapa futura.
+
+**Cuidado na publicação:** `localStorage` depende do endereço/origem. Antes de mudar de endereço, exporte um backup na origem antiga e restaure-o na nova.
