@@ -1,0 +1,202 @@
+@media (max-width: 1100px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .calendar-day {
+    min-height: 99px;
+  }
+}
+@media (max-width: 768px) {
+  body {
+    padding: 14px 8px;
+  }
+  .app-shell {
+    padding: 18px;
+  }
+  .app-layout {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    margin-top: 18px;
+  }
+  .app-sidebar {
+    padding: 0 0 15px;
+    border-right: 0;
+    border-bottom: 1px solid var(--tf-border);
+  }
+  .sidebar-caption {
+    margin-left: 0;
+  }
+  .sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .sidebar-link {
+    width: auto;
+  }
+  .sidebar-note {
+    display: none;
+  }
+  .calendar-day {
+    min-height: 88px;
+    padding: 4px;
+  }
+  .calendar-day.is-selected {
+    padding: 3px;
+  }
+  .calendar-chip {
+    font-size: 9px;
+  }
+  .item-actions {
+    max-width: 160px;
+  }
+}
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 14px;
+    border-radius: 14px;
+  }
+  .app-header {
+    align-items: flex-start;
+  }
+  .app-logo {
+    width: 44px;
+    height: 44px;
+    font-size: 23px;
+  }
+  .app-title h1 {
+    font-size: 22px;
+  }
+  .app-title p {
+    font-size: 10px;
+  }
+  .header-actions .btn .button-label {
+    display: none;
+  }
+  .form-grid,
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+  .span-2 {
+    grid-column: 1;
+  }
+  .form-actions .btn {
+    flex: 1;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stat-card {
+    min-height: 119px;
+  }
+  .sidebar-link {
+    padding: 9px;
+    gap: 6px;
+    font-size: 12px;
+  }
+  .sidebar-link i {
+    font-size: 14px;
+  }
+  .task-item {
+    flex-wrap: wrap;
+  }
+  .task-content {
+    min-width: calc(100% - 36px);
+  }
+  .task-item > .item-actions {
+    margin-left: auto;
+    max-width: 100%;
+  }
+  .task-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .task-filters {
+    width: 100%;
+  }
+  .task-filters .filter-button {
+    flex: 1;
+  }
+  .overview-card {
+    padding: 14px;
+  }
+  .overview-heading {
+    flex-wrap: wrap;
+  }
+  .calendar-grid {
+    gap: 2px;
+  }
+  .calendar-day {
+    min-height: 61px;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 2px;
+  }
+  .calendar-day.is-selected {
+    padding: 2px 1px;
+  }
+  .calendar-number {
+    width: 22px;
+    height: 22px;
+  }
+  /* Em telas pequenas os eventos viram pontos; a lista detalhada fica abaixo. */
+  .calendar-chip {
+    font-size: 0;
+    padding: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .calendar-more {
+    font-size: 9px;
+    padding: 0;
+    text-align: center;
+  }
+  .calendar-weekday {
+    font-size: 10px;
+  }
+  .calendar-nav h3 {
+    font-size: 16px;
+  }
+  .event-legend {
+    gap: 8px;
+  }
+}
+@media (max-width: 380px) {
+  .stats-grid {
+    gap: 7px;
+  }
+  .header-actions {
+    gap: 3px;
+  }
+  .calendar-day {
+    min-height: 57px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Ícones de ação em Unicode continuam visíveis sem conexão externa. */
+.icon-button .button-symbol {
+  font-size: 20px;
+  line-height: 1;
+}
+.calendar-nav .icon-button > span {
+  font-size: 23px;
+  line-height: 1;
+}
+.header-actions .button-symbol {
+  font-size: 17px;
+  line-height: 1;
+}
+[data-bs-theme="dark"] {
+  color-scheme: dark;
+}

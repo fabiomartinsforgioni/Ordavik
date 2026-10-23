@@ -1,0 +1,4 @@
+/* Ponto de entrada dos estilos. */
+@import url("./themes.css");
+@import url("./components.css");
+@import url("./responsive.css");

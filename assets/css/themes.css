@@ -1,0 +1,53 @@
+/* ============================================================================
+   ORDAVIK | ESTILOS DA APLICAÇÃO
+   ============================================================================
+   Organização: temas -> estrutura -> navegação -> dashboard -> tarefas ->
+   filtros -> edição -> acessibilidade -> responsividade.
+
+   Convenção:
+   - Classes descrevem componentes (.task-item, .task-edit-area).
+   - Variáveis --tf-* centralizam cores, tornando os temas mais fáceis de manter.
+   - Atributos data-priority definem a cor das etiquetas de prioridade.
+   ============================================================================ */
+
+/* ---------------------------------------------------------------------------
+   1. VARIÁVEIS DE CORES PARA OS TEMAS CLARO E ESCURO
+   --------------------------------------------------------------------------- */
+
+:root,
+[data-bs-theme="light"] {
+  --tf-background: #f5f7fa;
+  --tf-surface: #ffffff;
+  --tf-surface-alt: #f8fafc;
+  --tf-text: #17263c;
+  --tf-muted: #526176;
+  --tf-primary: #0f6b67;
+  --tf-border: #d8e1ea;
+  --tf-hover: #e6f4f1;
+  --tf-active: #e1f1ee;
+  --tf-active-text: #0b5552;
+  --tf-task: #f8fafc;
+  --tf-completed: #dcfce7;
+  --tf-completed-text: #4b6374;
+  --tf-progress-track: #d8e1ea;
+  --tf-shadow: 0 12px 38px rgba(15, 23, 42, 0.08);
+}
+
+/* O JavaScript altera data-bs-theme no elemento <html>. */
+[data-bs-theme="dark"] {
+  --tf-background: #0d1522;
+  --tf-surface: #162235;
+  --tf-surface-alt: #1c2c41;
+  --tf-text: #edf3fa;
+  --tf-muted: #aab8cb;
+  --tf-primary: #56d4c5;
+  --tf-border: #304157;
+  --tf-hover: #233950;
+  --tf-active: #164642;
+  --tf-active-text: #e6f4f1;
+  --tf-task: #1b2a3e;
+  --tf-completed: #174d3b;
+  --tf-completed-text: #d1fae5;
+  --tf-progress-track: #334155;
+  --tf-shadow: 0 12px 38px rgba(0, 0, 0, 0.14);
+}

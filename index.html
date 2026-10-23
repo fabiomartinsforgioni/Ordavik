@@ -1,247 +1,918 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <!-- Metadados: idioma, caracteres, viewport e descrição para buscadores. -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TaskFlow: organize suas tarefas e acompanhe sua produtividade.">
-    <title>TaskFlow | Gerenciador de Tarefas</title>
-
-    <!-- Aplica a preferência salva antes do CSS, evitando piscar o tema claro. -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Ordavik: tarefas, agenda, calendário, reuniões, aniversários e feriados em um só lugar."
+    />
+    <title>Hoje | Ordavik</title>
+    <!-- A preferência de tema é aplicada antes dos estilos para evitar a troca visual no carregamento. -->
     <script>
-        try {
-            const savedTheme = localStorage.getItem("taskflow-theme");
-            document.documentElement.setAttribute(
-                "data-bs-theme",
-                savedTheme === "dark" ? "dark" : "light"
-            );
-        } catch {
-            document.documentElement.setAttribute("data-bs-theme", "light");
-        }
+      try {
+        document.documentElement.setAttribute(
+          "data-bs-theme",
+          localStorage.getItem("taskflow-theme") === "dark" ||
+            (localStorage.getItem("taskflow-theme") !== "light" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches)
+            ? "dark"
+            : "light",
+        );
+      } catch {
+        document.documentElement.setAttribute("data-bs-theme", "light");
+      }
     </script>
-
-    <!-- Bootstrap e ícones via CDN: carregados antes dos nossos estilos. -->
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-        crossorigin="anonymous"
-    >
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
     <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css"
-    >
-    <link rel="stylesheet" href="style.css">
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"
-        defer
-    ></script>
-    <!-- defer executa o JavaScript após o HTML ser interpretado. -->
-    <script src="script.js" defer></script>
-</head>
-<body>
-    <!-- Contêiner principal: limita a largura e mantém a interface centralizada. -->
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="icon" type="image/svg+xml" href="assets/icons/ordavik.svg" />
+    <!-- Bundle clássico gerado a partir de src/js: funciona também ao abrir este arquivo. -->
+    <script defer src="assets/js/app.js"></script>
+  </head>
+  <body>
     <div class="app-shell">
-        <!-- Cabeçalho com identidade visual e botão para trocar o tema. -->
-        <header class="app-header">
-            <div class="app-brand">
-                <div class="app-logo" aria-hidden="true">
-                    <i class="bi bi-check2-square"></i>
-                </div>
-                <div class="app-title">
-                    <h1>TaskFlow</h1>
-                    <p>Seu espaço de produtividade</p>
-                </div>
-            </div>
-
-            <button
-                type="button"
-                id="theme-toggle"
-                class="btn theme-toggle"
-                aria-label="Ativar modo escuro"
-                aria-pressed="false"
-                title="Alternar tema"
-            >
-                <i class="bi bi-moon-stars" aria-hidden="true"></i>
-            </button>
-        </header>
-
-        <div class="app-layout">
-            <!-- Navegação: data-view-target indica qual painel o JS deve abrir. -->
-            <aside class="app-sidebar">
-                <p class="sidebar-caption">NAVEGAÇÃO</p>
-                <nav class="sidebar-nav" aria-label="Navegação principal">
-                    <button
-                        type="button"
-                        class="sidebar-link is-active"
-                        data-view-target="home"
-                        aria-current="page"
-                    >
-                        <i class="bi bi-house-door" aria-hidden="true"></i>
-                        <span>Início</span>
-                    </button>
-                    <button
-                        type="button"
-                        class="sidebar-link"
-                        data-view-target="tasks"
-                    >
-                        <i class="bi bi-check2-square" aria-hidden="true"></i>
-                        <span>Minhas tarefas</span>
-                    </button>
-                </nav>
-            </aside>
-
-            <main class="app-content" id="main-content">
-                <!-- Os painéis são alternados pelo JavaScript, sem recarregar a página. -->
-                <!-- Painel inicial: indicadores calculados por refreshTaskUI(). -->
-                <section
-                    class="app-view"
-                    id="view-home"
-                    data-view-panel="home"
-                    aria-labelledby="home-heading"
-                >
-                    <div class="section-heading">
-                        <p class="eyebrow">PAINEL GERAL</p>
-                        <h2 id="home-heading" tabindex="-1">Seu dia em foco</h2>
-                        <p>Veja seu progresso e mantenha suas atividades sob controle.</p>
-                    </div>
-
-                    <!-- Grid responsivo do Bootstrap: 1 coluna no celular, 3 no desktop. -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-12 col-md-4">
-                            <article class="stat-card stat-card-total">
-                                <span class="stat-icon" aria-hidden="true"><i class="bi bi-list-task"></i></span>
-                                <p>Total de tarefas</p>
-                                <strong id="summary-total">0</strong>
-                            </article>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <article class="stat-card stat-card-pending">
-                                <span class="stat-icon" aria-hidden="true"><i class="bi bi-hourglass-split"></i></span>
-                                <p>Pendentes</p>
-                                <strong id="summary-pending">0</strong>
-                            </article>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <article class="stat-card stat-card-completed">
-                                <span class="stat-icon" aria-hidden="true"><i class="bi bi-check2-circle"></i></span>
-                                <p>Concluídas</p>
-                                <strong id="summary-completed">0</strong>
-                            </article>
-                        </div>
-                    </div>
-
-                    <div class="overview-card">
-                        <div class="overview-heading">
-                            <h3>Seu progresso</h3>
-                            <span id="progress-label">0% concluído</span>
-                        </div>
-                        <div
-                            class="progress"
-                            role="progressbar"
-                            aria-label="Porcentagem de tarefas concluídas"
-                            aria-valuenow="0"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                            id="progress-track"
-                        >
-                            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
-                        </div>
-                        <p id="home-status" aria-live="polite">Você ainda não cadastrou tarefas.</p>
-                        <button type="button" class="btn btn-primary" data-view-target="tasks">
-                            <i class="bi bi-arrow-right-circle me-1" aria-hidden="true"></i>
-                            Gerenciar tarefas
-                        </button>
-                    </div>
-                </section>
-
-                <!-- Painel de tarefas: começa oculto; o JS alterna o hidden. -->
-                <section
-                    class="app-view"
-                    id="view-tasks"
-                    data-view-panel="tasks"
-                    aria-labelledby="tasks-heading"
-                    hidden
-                >
-                    <div class="section-heading">
-                        <p class="eyebrow">ORGANIZAÇÃO</p>
-                        <h2 id="tasks-heading" tabindex="-1">Minhas tarefas</h2>
-                        <p>Adicione atividades e acompanhe o que já foi feito.</p>
-                    </div>
-
-                    <!-- Submit: o JS cria um objeto tarefa e impede o recarregamento. -->
-                    <form id="task-form" class="task-form">
-                        <!-- O rótulo continua acessível mesmo estando invisível na tela. -->
-                        <label class="visually-hidden" for="task-input">Nova tarefa</label>
-                        <input
-                            type="text"
-                            class="form-control task-input"
-                            id="task-input"
-                            placeholder="Digite uma nova tarefa"
-                            maxlength="140"
-                            autocomplete="off"
-                            required
-                        >
-                        <!-- Prioridade selecionada ao cadastrar uma tarefa. -->
-                        <label for="task-priority" class="visually-hidden">
-                            Prioridade da tarefa
-                        </label>
-                        <!-- Os valores low/medium/high são persistidos no objeto da tarefa. -->
-                        <select id="task-priority" class="form-select task-priority-select">
-                            <option value="low">Baixa</option>
-                            <option value="medium" selected>Média</option>
-                            <option value="high">Alta</option>
-                        </select>
-
-                        <button type="submit" class="btn btn-primary add-button">
-                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                            Adicionar
-                        </button>
-                    </form>
-
-                    <!-- Filtros: data-filter é lido por setFilter() no JavaScript. -->
-                    <div class="task-toolbar">
-                        <h3>Atividades <span id="task-total-badge" class="task-badge">0</span></h3>
-                        <div
-                            class="task-filters"
-                            role="group"
-                            aria-label="Filtrar tarefas por situação"
-                        >
-                            <button
-                                type="button"
-                                class="filter-button is-active"
-                                data-filter="all"
-                                aria-pressed="true"
-                            >Todas</button>
-                            <button
-                                type="button"
-                                class="filter-button"
-                                data-filter="pending"
-                                aria-pressed="false"
-                            >Pendentes</button>
-                            <button
-                                type="button"
-                                class="filter-button"
-                                data-filter="completed"
-                                aria-pressed="false"
-                            >Concluídas</button>
-                        </div>
-                    </div>
-
-                    <!-- Lista vazia no HTML: createTaskElement() gera cada <li>. -->
-                    <ul id="task-list" aria-label="Lista de tarefas"></ul>
-
-                    <div class="empty-state" id="empty-state" role="status">
-                        <i class="bi bi-clipboard-check" aria-hidden="true"></i>
-                        <!-- Mensagem que muda conforme o filtro e a quantidade de tarefas. -->
-                        <p id="empty-state-text">Nenhuma tarefa cadastrada. Que tal começar?</p>
-                    </div>
-                </section>
-            </main>
+      <header class="app-header">
+        <div class="app-brand">
+          <img class="app-logo" src="assets/icons/ordavik.svg" alt="" width="54" height="54" />
+          <div class="app-title">
+            <h1 id="brand-name">Ordavik</h1>
+            <p id="brand-tagline">Clareza para o próximo passo.</p>
+          </div>
         </div>
+        <div class="header-actions">
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            id="export-backup"
+            title="Exportar cópia local dos dados"
+          >
+            <span class="button-symbol" aria-hidden="true">⇩</span>
+            <span class="button-label">Backup</span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            id="import-backup"
+            title="Importar backup em JSON"
+          >
+            <span class="button-symbol" aria-hidden="true">⇧</span>
+            <span class="button-label">Restaurar</span>
+          </button>
+          <input
+            type="file"
+            id="backup-file"
+            accept=".json,application/json"
+            hidden
+            aria-label="Selecionar arquivo de backup"
+          />
+          <button
+            type="button"
+            class="btn theme-toggle"
+            id="theme-toggle"
+            aria-label="Ativar modo escuro"
+            aria-pressed="false"
+          >
+            <span id="theme-symbol" aria-hidden="true">☾</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="app-layout">
+        <aside class="app-sidebar">
+          <p class="sidebar-caption">NAVEGAÇÃO</p>
+          <nav class="sidebar-nav" aria-label="Navegação principal">
+            <button
+              type="button"
+              class="sidebar-link is-active"
+              data-view-target="home"
+              aria-current="page"
+            >
+              <i class="bi bi-house-door" aria-hidden="true"></i><span>Início</span>
+            </button>
+            <button type="button" class="sidebar-link" data-view-target="tasks">
+              <i class="bi bi-check2-square" aria-hidden="true"></i><span>Minhas tarefas</span>
+            </button>
+            <button type="button" class="sidebar-link" data-view-target="work">
+              <span aria-hidden="true">▦</span><span>Trabalho</span>
+            </button>
+            <button type="button" class="sidebar-link" data-view-target="agenda">
+              <i class="bi bi-calendar-event" aria-hidden="true"></i><span>Agenda</span>
+            </button>
+            <button type="button" class="sidebar-link" data-view-target="calendar">
+              <i class="bi bi-calendar3" aria-hidden="true"></i><span>Calendário</span>
+            </button>
+          </nav>
+          <div
+            id="work-client-shortcuts"
+            class="work-client-shortcuts"
+            aria-label="Atalhos de clientes"
+          ></div>
+          <div class="sidebar-note">
+            <i class="bi bi-device-hdd" aria-hidden="true"></i>
+            Seus dados ficam neste navegador. Use <strong>Backup</strong> para guardar uma cópia.
+          </div>
+        </aside>
+
+        <main class="app-content" id="main-content">
+          <div id="startup-warning" class="warning-banner" role="alert" hidden></div>
+          <div id="storage-warning" class="warning-banner" role="alert" hidden>
+            <span id="storage-warning-text"></span> Use o botão Backup no cabeçalho.
+          </div>
+          <!-- INÍCIO: visão geral, indicadores e acontecimentos de hoje. -->
+          <section
+            class="app-view"
+            id="view-home"
+            data-view-panel="home"
+            aria-labelledby="home-heading"
+          >
+            <div class="section-heading">
+              <p class="eyebrow">PAINEL GERAL</p>
+              <h2 id="home-heading" tabindex="-1">Seu dia em foco</h2>
+              <p>Acompanhe prioridades, prazos e compromissos em um só lugar.</p>
+            </div>
+            <div class="stats-grid">
+              <article class="stat-card">
+                <span class="stat-icon"><i class="bi bi-list-task" aria-hidden="true"></i></span>
+                <p>Total de tarefas</p>
+                <strong id="summary-total">0</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-icon"
+                  ><i class="bi bi-hourglass-split" aria-hidden="true"></i
+                ></span>
+                <p>Pendentes</p>
+                <strong id="summary-pending">0</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-icon"
+                  ><i class="bi bi-check2-circle" aria-hidden="true"></i
+                ></span>
+                <p>Concluídas</p>
+                <strong id="summary-completed">0</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-icon stat-icon-danger"
+                  ><i class="bi bi-exclamation-triangle" aria-hidden="true"></i
+                ></span>
+                <p>Vencidas</p>
+                <strong id="summary-overdue">0</strong>
+              </article>
+              <article class="stat-card">
+                <span class="stat-icon"
+                  ><i class="bi bi-calendar-check" aria-hidden="true"></i
+                ></span>
+                <p>Reuniões hoje</p>
+                <strong id="summary-meetings">0</strong>
+              </article>
+            </div>
+            <div class="overview-card mt-3">
+              <div class="overview-heading">
+                <h3>Seu progresso</h3>
+                <span id="progress-label">0% concluído</span>
+              </div>
+              <div
+                class="progress"
+                id="progress-track"
+                role="progressbar"
+                aria-label="Progresso das tarefas"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+              >
+                <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+              </div>
+              <p id="home-status" aria-live="polite">Você ainda não cadastrou tarefas.</p>
+              <button type="button" class="btn btn-primary btn-sm" data-view-target="tasks">
+                Gerenciar tarefas <i class="bi bi-arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+            <div class="overview-card mt-3">
+              <div class="overview-heading">
+                <h3>Programação de hoje</h3>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  data-view-target="calendar"
+                >
+                  Ver calendário
+                </button>
+              </div>
+              <div id="home-today" class="stack-list mt-3" aria-live="polite"></div>
+            </div>
+            <div class="overview-card mt-3">
+              <h3 class="panel-title">O que precisa da sua atenção</h3>
+              <ul id="home-focus" class="task-list mt-3"></ul>
+            </div>
+          </section>
+
+          <!-- TAREFAS: formulário único para cadastrar e editar todos os campos. -->
+          <section
+            class="app-view"
+            id="view-tasks"
+            data-view-panel="tasks"
+            aria-labelledby="tasks-heading"
+            hidden
+          >
+            <div class="section-heading">
+              <p class="eyebrow">ORGANIZAÇÃO</p>
+              <h2 id="tasks-heading" tabindex="-1">Minhas tarefas</h2>
+              <p>Organize trabalho, estudos e vida pessoal com prazos e prioridades.</p>
+            </div>
+            <div class="overview-card">
+              <div class="overview-heading">
+                <h3 id="task-form-heading">Nova tarefa</h3>
+                <span>Campos com * são obrigatórios</span>
+              </div>
+              <div class="form-field mt-3">
+                <label for="task-template">Começar com um modelo</label
+                ><select id="task-template" class="form-select">
+                  <option value="">Cadastro livre</option>
+                </select>
+              </div>
+              <form id="task-form" class="form-grid mt-3">
+                <div class="form-field span-2">
+                  <label for="task-input">Título *</label
+                  ><input
+                    type="text"
+                    id="task-input"
+                    class="form-control"
+                    maxlength="140"
+                    placeholder="Ex.: Corrigir integração Supplier"
+                    required
+                  />
+                </div>
+                <details id="task-advanced" class="advanced-fields span-2">
+                  <summary>Detalhes, planejamento e etapas</summary>
+                  <div class="form-grid mt-3">
+                    <div class="form-field">
+                      <label for="task-category">Natureza</label
+                      ><select id="task-category" class="form-select">
+                        <option value="work">Trabalho</option>
+                        <option value="personal">Pessoal</option>
+                        <option value="studies">Estudos</option>
+                        <option value="other">Outros</option>
+                      </select>
+                    </div>
+                    <div class="form-field">
+                      <label for="task-priority">Prioridade</label
+                      ><select id="task-priority" class="form-select">
+                        <option value="low">Baixa</option>
+                        <option value="medium" selected>Média</option>
+                        <option value="high">Alta</option>
+                      </select>
+                    </div>
+                    <div class="form-field span-2">
+                      <label for="task-details">Descrição detalhada</label
+                      ><textarea
+                        id="task-details"
+                        class="form-control"
+                        rows="3"
+                        maxlength="1000"
+                        placeholder="Descreva as informações importantes para executar a tarefa..."
+                      ></textarea>
+                    </div>
+                    <div class="form-field">
+                      <label for="task-client">Cliente cadastrado</label
+                      ><select id="task-client" class="form-select">
+                        <option value="">Sem cliente</option>
+                      </select>
+                    </div>
+                    <div class="form-field">
+                      <label for="task-demand">Demanda</label
+                      ><select id="task-demand" class="form-select">
+                        <option value="">Tarefa avulsa</option>
+                      </select>
+                    </div>
+                    <div class="form-field">
+                      <label for="task-work-type">Tipo de atividade</label
+                      ><select id="task-work-type" class="form-select"></select>
+                    </div>
+                    <div class="form-field">
+                      <label for="task-waiting-for">Aguardando quem?</label
+                      ><input
+                        id="task-waiting-for"
+                        class="form-control"
+                        maxlength="200"
+                        placeholder="Pessoa, área ou retorno esperado"
+                      />
+                    </div>
+                    <div class="form-field">
+                      <label for="task-follow-up">Data de acompanhamento</label
+                      ><input id="task-follow-up" class="form-control" type="date" /><span
+                        class="help-text"
+                        >Quando consultar ou cobrar um retorno; é diferente do prazo de
+                        entrega.</span
+                      >
+                    </div>
+                    <div class="form-field">
+                      <label for="task-project">Projeto / referência livre</label
+                      ><input
+                        type="text"
+                        id="task-project"
+                        class="form-control"
+                        maxlength="80"
+                        placeholder="Ex.: Mazer, Ordavik..."
+                      />
+                    </div>
+                    <div class="form-field">
+                      <label for="task-tags">Etiquetas (separadas por vírgula)</label
+                      ><input
+                        type="text"
+                        id="task-tags"
+                        class="form-control"
+                        maxlength="160"
+                        placeholder="Ex.: urgente, fornecedor"
+                      />
+                    </div>
+                    <div class="form-field">
+                      <label for="task-start-date">Data de início</label
+                      ><input type="date" id="task-start-date" class="form-control" />
+                    </div>
+                    <div class="form-field">
+                      <label for="task-due-date">Prazo de entrega</label
+                      ><input type="date" id="task-due-date" class="form-control" />
+                    </div>
+                    <div class="form-field">
+                      <label for="task-due-time">Horário limite (opcional)</label
+                      ><input type="time" id="task-due-time" class="form-control" />
+                    </div>
+
+                    <div class="form-field">
+                      <label for="task-status">Situação</label
+                      ><select id="task-status" class="form-select">
+                        <option value="pending">Pendente</option>
+                        <option value="progress">Em andamento</option>
+                        <option value="waiting">Aguardando retorno</option>
+                        <option value="completed">Concluída</option>
+                      </select>
+                    </div>
+                    <div class="form-field">
+                      <label for="task-recurrence">Repetição ao concluir</label
+                      ><select id="task-recurrence" class="form-select">
+                        <option value="none">Não repetir</option>
+                        <option value="daily">Diariamente</option>
+                        <option value="weekly">Semanalmente</option>
+                        <option value="monthly">Mensalmente</option>
+                      </select>
+                    </div>
+                    <div class="form-field span-2">
+                      <label for="task-next-action">Próxima ação</label
+                      ><input
+                        id="task-next-action"
+                        class="form-control"
+                        maxlength="300"
+                        placeholder="O que você precisa fazer para avançar?"
+                      />
+                    </div>
+                    <div class="form-field span-2">
+                      <label for="task-subtasks">Etapas (uma por linha, até 50)</label
+                      ><textarea
+                        id="task-subtasks"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Reproduzir o problema&#10;Validar a solução"
+                      ></textarea>
+                    </div>
+                    <div class="form-field">
+                      <label for="task-estimated">Estimativa (minutos)</label
+                      ><input
+                        id="task-estimated"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        max="100000"
+                        value="0"
+                      />
+                    </div>
+                    <div class="form-field">
+                      <label for="task-actual">Tempo realizado (minutos)</label
+                      ><input
+                        id="task-actual"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        max="100000"
+                        value="0"
+                      />
+                    </div>
+                    <div class="form-field span-2">
+                      <label for="task-update">Registrar atualização no histórico</label
+                      ><textarea
+                        id="task-update"
+                        class="form-control"
+                        rows="2"
+                        maxlength="500"
+                        placeholder="Decisão, retorno ou resultado de um teste..."
+                      ></textarea>
+                    </div>
+                  </div>
+                </details>
+                <div class="form-actions span-2">
+                  <button type="button" id="task-cancel" class="btn btn-outline-secondary" hidden>
+                    Cancelar edição</button
+                  ><button type="submit" id="task-submit" class="btn btn-primary">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar tarefa
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div class="task-toolbar">
+              <h3>Atividades <span id="task-total-badge" class="task-badge">0</span></h3>
+              <div class="task-filters" role="group" aria-label="Filtrar tarefas por situação">
+                <button
+                  type="button"
+                  data-filter="all"
+                  class="filter-button is-active"
+                  aria-pressed="true"
+                >
+                  Todas
+                </button>
+                <button
+                  type="button"
+                  data-filter="pending"
+                  class="filter-button"
+                  aria-pressed="false"
+                >
+                  Pendentes
+                </button>
+                <button
+                  type="button"
+                  data-filter="progress"
+                  class="filter-button"
+                  aria-pressed="false"
+                >
+                  Em andamento</button
+                ><button
+                  type="button"
+                  data-filter="waiting"
+                  class="filter-button"
+                  aria-pressed="false"
+                >
+                  Aguardando retorno
+                </button>
+                <button
+                  type="button"
+                  data-filter="completed"
+                  class="filter-button"
+                  aria-pressed="false"
+                >
+                  Concluídas
+                </button>
+              </div>
+            </div>
+            <div class="filter-grid">
+              <div class="form-field">
+                <label for="task-search">Pesquisar</label
+                ><input
+                  id="task-search"
+                  type="search"
+                  class="form-control"
+                  placeholder="Título, descrição, cliente ou etiqueta"
+                />
+              </div>
+              <div class="form-field">
+                <label for="task-filter-category">Natureza</label
+                ><select id="task-filter-category" class="form-select">
+                  <option value="all">Todas</option>
+                  <option value="work">Trabalho</option>
+                  <option value="personal">Pessoal</option>
+                  <option value="studies">Estudos</option>
+                  <option value="other">Outros</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="task-filter-priority">Prioridade</label
+                ><select id="task-filter-priority" class="form-select">
+                  <option value="all">Todas</option>
+                  <option value="high">Alta</option>
+                  <option value="medium">Média</option>
+                  <option value="low">Baixa</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="task-filter-period">Prazo</label
+                ><select id="task-filter-period" class="form-select">
+                  <option value="all">Todos</option>
+                  <option value="overdue">Vencidas</option>
+                  <option value="today">Hoje</option>
+                  <option value="week">Próximos 7 dias</option>
+                  <option value="none">Sem prazo</option>
+                </select>
+              </div>
+            </div>
+            <div class="filter-grid mt-3">
+              <div class="form-field">
+                <label for="task-filter-project">Cliente / projeto</label
+                ><input
+                  id="task-filter-project"
+                  class="form-control"
+                  type="search"
+                  placeholder="Filtrar por cliente ou projeto"
+                />
+              </div>
+              <div class="form-field">
+                <label for="task-sort">Ordenar por</label
+                ><select id="task-sort" class="form-select">
+                  <option value="deadline">Prazo mais próximo</option>
+                  <option value="priority">Maior prioridade</option>
+                  <option value="title">Título</option>
+                  <option value="newest">Mais recentes</option>
+                </select>
+              </div>
+            </div>
+            <ul id="task-list" class="task-list mt-3" aria-label="Lista de tarefas"></ul>
+            <div id="empty-state" class="empty-state" role="status" hidden>
+              <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+              <p id="empty-state-text">Nenhuma tarefa cadastrada.</p>
+            </div>
+          </section>
+
+          <!-- AGENDA: compromissos com data/hora e datas especiais recorrentes. -->
+          <section
+            class="app-view"
+            id="view-work"
+            data-view-panel="work"
+            aria-labelledby="work-heading"
+            hidden
+          >
+            <div class="section-heading">
+              <p class="eyebrow">CLIENTES E DEMANDAS</p>
+              <h2 id="work-heading" tabindex="-1">Trabalho</h2>
+              <p>Separe os contextos e acompanhe o próximo passo de cada entrega.</p>
+            </div>
+            <div class="work-actions">
+              <button id="work-all-clients" type="button" class="btn btn-outline-secondary">
+                Visão geral</button
+              ><button id="work-add-client" type="button" class="btn btn-primary">
+                Adicionar cliente</button
+              ><label class="subtask-row"
+                ><input id="work-show-archived" type="checkbox" /> Mostrar arquivados</label
+              >
+            </div>
+            <div id="work-clients" class="work-client-list mt-3"></div>
+            <details id="work-client-editor" class="overview-card mt-3">
+              <summary>Cadastrar / editar cliente</summary>
+              <form id="work-client-form" class="form-grid mt-3"></form>
+            </details>
+            <div class="overview-heading mt-3">
+              <h3 id="work-context-title">Visão geral do trabalho</h3>
+              <div class="work-actions">
+                <button
+                  id="work-edit-client"
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  hidden
+                >
+                  Editar cliente</button
+                ><button
+                  id="work-favorite-client"
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  hidden
+                >
+                  Favoritar</button
+                ><button
+                  id="work-archive-client"
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  hidden
+                >
+                  Arquivar cliente
+                </button>
+              </div>
+            </div>
+            <div class="work-actions mt-3">
+              <button id="work-add-task" type="button" class="btn btn-primary">
+                Nova tarefa de trabalho</button
+              ><button id="work-add-demand" type="button" class="btn btn-outline-secondary">
+                Nova demanda
+              </button>
+            </div>
+            <details id="work-demand-editor" class="overview-card mt-3">
+              <summary>Cadastrar / editar demanda</summary>
+              <form id="work-demand-form" class="form-grid mt-3"></form>
+            </details>
+            <div
+              class="task-filters work-tabs mt-3"
+              role="group"
+              aria-label="Visualização do trabalho"
+            >
+              <button type="button" class="filter-button" data-work-tab="summary">Resumo</button
+              ><button type="button" class="filter-button" data-work-tab="demands">Demandas</button
+              ><button type="button" class="filter-button" data-work-tab="tasks">Tarefas</button
+              ><button type="button" class="filter-button" data-work-tab="agenda">
+                Agenda do cliente</button
+              ><button type="button" class="filter-button" data-work-tab="notes">Anotações</button>
+            </div>
+            <div data-work-panel="summary">
+              <div id="work-summary" class="stats-grid mt-3"></div>
+              <div class="overview-card mt-3">
+                <h4 class="panel-title">Retornos e acompanhamentos</h4>
+                <ul id="work-attention" class="task-list mt-3"></ul>
+                <h4 class="panel-title mt-3">Demandas para acompanhar</h4>
+                <div id="work-demand-attention" class="work-demand-list mt-3"></div>
+              </div>
+            </div>
+            <div data-work-panel="demands" hidden>
+              <div id="work-demands" class="work-demand-list mt-3"></div>
+            </div>
+            <div data-work-panel="tasks" hidden>
+              <div class="filter-grid mt-3">
+                <div class="form-field">
+                  <label for="work-task-search">Buscar tarefas de trabalho</label
+                  ><input id="work-task-search" type="search" class="form-control" />
+                </div>
+                <div class="form-field">
+                  <label for="work-task-status">Andamento</label
+                  ><select id="work-task-status" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="pending">Pendente</option>
+                    <option value="progress">Em andamento</option>
+                    <option value="waiting">Aguardando retorno</option>
+                    <option value="completed">Concluída</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="work-demand-filter">Demanda / tarefas avulsas</label
+                  ><select id="work-demand-filter" class="form-select">
+                    <option value="">Todas as demandas</option>
+                  </select>
+                </div>
+              </div>
+              <ul id="work-tasks" class="task-list mt-3"></ul>
+            </div>
+            <div data-work-panel="agenda" hidden>
+              <div id="work-agenda" class="stack-list mt-3"></div>
+            </div>
+            <div data-work-panel="notes" hidden>
+              <p id="work-notes-empty" class="help-text">
+                Selecione um cliente para consultar suas anotações.
+              </p>
+              <form id="work-notes-form" class="mt-3" hidden>
+                <label for="work-notes" class="form-label">Anotações gerais do cliente</label
+                ><textarea id="work-notes" class="form-control" rows="6" maxlength="5000"></textarea
+                ><button type="submit" class="btn btn-primary mt-3">Salvar anotações</button>
+              </form>
+            </div>
+          </section>
+          <section
+            class="app-view"
+            id="view-agenda"
+            data-view-panel="agenda"
+            aria-labelledby="agenda-heading"
+            hidden
+          >
+            <div class="section-heading">
+              <p class="eyebrow">COMPROMISSOS</p>
+              <h2 id="agenda-heading" tabindex="-1">Minha agenda</h2>
+              <p>Cadastre reuniões, consultas, compromissos e datas especiais.</p>
+            </div>
+            <div class="overview-card">
+              <div class="overview-heading">
+                <h3 id="meeting-form-heading">Novo compromisso</h3>
+                <span>Horários locais</span>
+              </div>
+              <form id="meeting-form" class="form-grid mt-3">
+                <div class="form-field span-2">
+                  <label for="meeting-title">Título *</label
+                  ><input
+                    id="meeting-title"
+                    type="text"
+                    class="form-control"
+                    maxlength="140"
+                    required
+                    placeholder="Ex.: Reunião semanal Supplier"
+                  />
+                </div>
+                <div class="form-field">
+                  <label for="meeting-date">Data *</label
+                  ><input id="meeting-date" type="date" class="form-control" required />
+                </div>
+                <div class="form-field">
+                  <label for="meeting-category">Natureza</label
+                  ><select id="meeting-category" class="form-select">
+                    <option value="work">Trabalho</option>
+                    <option value="personal">Pessoal</option>
+                    <option value="studies">Estudos</option>
+                    <option value="other">Outros</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="meeting-start">Início *</label
+                  ><input id="meeting-start" type="time" class="form-control" required />
+                </div>
+                <div class="form-field">
+                  <label for="meeting-end">Término *</label
+                  ><input id="meeting-end" type="time" class="form-control" required />
+                </div>
+                <div class="form-field">
+                  <label for="meeting-client">Cliente cadastrado</label
+                  ><select id="meeting-client" class="form-select">
+                    <option value="">Sem cliente</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="meeting-project">Cliente / Projeto</label
+                  ><input
+                    id="meeting-project"
+                    type="text"
+                    class="form-control"
+                    maxlength="80"
+                    placeholder="Ex.: Manuchar"
+                  />
+                </div>
+                <div class="form-field">
+                  <label for="meeting-location">Local ou link da reunião</label
+                  ><input
+                    id="meeting-location"
+                    type="text"
+                    class="form-control"
+                    maxlength="300"
+                    placeholder="Ex.: Microsoft Teams ou Sala 2"
+                  />
+                </div>
+                <div class="form-field span-2">
+                  <label for="meeting-details">Descrição</label
+                  ><textarea
+                    id="meeting-details"
+                    rows="2"
+                    class="form-control"
+                    maxlength="1000"
+                    placeholder="Pauta, observações e próximos passos..."
+                  ></textarea>
+                </div>
+                <div class="form-actions span-2">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    id="meeting-cancel"
+                    hidden
+                  >
+                    Cancelar edição</button
+                  ><button type="submit" class="btn btn-primary" id="meeting-submit">
+                    Adicionar compromisso
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div class="overview-card mt-3">
+              <div class="overview-heading">
+                <h3>Compromissos</h3>
+                <div class="mini-actions">
+                  <button class="btn btn-outline-secondary btn-sm" type="button" id="agenda-today">
+                    Hoje</button
+                  ><label class="visually-hidden" for="agenda-date">Data da agenda</label
+                  ><input
+                    id="agenda-date"
+                    type="date"
+                    class="form-control form-control-sm compact-date"
+                  />
+                </div>
+              </div>
+              <p class="help-text">
+                Exibimos os compromissos do dia escolhido e os próximos agendados.
+              </p>
+              <div id="agenda-content" class="stack-list" aria-live="polite"></div>
+            </div>
+            <div class="overview-card mt-3">
+              <div class="overview-heading">
+                <h3 id="celebration-form-heading">Aniversários e datas especiais</h3>
+              </div>
+              <form id="celebration-form" class="form-grid mt-3">
+                <div class="form-field">
+                  <label for="celebration-name">Nome / ocasião *</label
+                  ><input
+                    type="text"
+                    class="form-control"
+                    id="celebration-name"
+                    maxlength="140"
+                    required
+                    placeholder="Ex.: Aniversário da Ana"
+                  />
+                </div>
+                <div class="form-field">
+                  <label for="celebration-kind">Tipo</label
+                  ><select id="celebration-kind" class="form-select">
+                    <option value="birthday">Aniversário</option>
+                    <option value="special">Data especial</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="celebration-date">Data *</label
+                  ><input type="date" id="celebration-date" class="form-control" required />
+                </div>
+                <div class="form-field">
+                  <label for="celebration-notes">Observação</label
+                  ><input
+                    type="text"
+                    id="celebration-notes"
+                    class="form-control"
+                    maxlength="250"
+                    placeholder="Ex.: enviar parabéns"
+                  />
+                </div>
+                <div class="form-actions span-2">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    id="celebration-cancel"
+                    hidden
+                  >
+                    Cancelar edição</button
+                  ><button type="submit" class="btn btn-primary" id="celebration-submit">
+                    Adicionar data
+                  </button>
+                </div>
+              </form>
+              <p class="help-text">
+                Datas repetem anualmente. Em anos não bissextos, 29/02 aparece em 28/02.
+              </p>
+              <div id="celebration-content" class="stack-list mt-3"></div>
+            </div>
+          </section>
+
+          <!-- CALENDÁRIO: grade gerada por calendar.js a partir dos registros existentes. -->
+          <section
+            class="app-view"
+            id="view-calendar"
+            data-view-panel="calendar"
+            aria-labelledby="calendar-heading"
+            hidden
+          >
+            <div class="section-heading">
+              <p class="eyebrow">PLANEJAMENTO</p>
+              <h2 id="calendar-heading" tabindex="-1">Calendário</h2>
+              <p>Reuniões, prazos, aniversários e feriados nacionais em uma única visão.</p>
+            </div>
+            <div class="overview-card">
+              <div class="calendar-toolbar">
+                <div class="calendar-nav">
+                  <h3 id="calendar-month" aria-live="polite">Mês</h3>
+                  <button
+                    type="button"
+                    id="calendar-prev"
+                    class="icon-button"
+                    aria-label="Mês anterior"
+                  >
+                    <span aria-hidden="true">‹</span></button
+                  ><button
+                    type="button"
+                    id="calendar-next"
+                    class="icon-button"
+                    aria-label="Próximo mês"
+                  >
+                    <span aria-hidden="true">›</span></button
+                  ><button
+                    type="button"
+                    id="calendar-today"
+                    class="btn btn-outline-secondary btn-sm"
+                  >
+                    Hoje
+                  </button>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" id="calendar-add">
+                  + Compromisso
+                </button>
+              </div>
+              <div class="event-legend" aria-label="Legenda">
+                <span><i class="legend-dot type-meeting"></i>Reunião</span
+                ><span><i class="legend-dot type-task"></i>Tarefa</span
+                ><span><i class="legend-dot type-birthday"></i>Aniversário</span
+                ><span><i class="legend-dot type-special"></i>Data especial</span
+                ><span><i class="legend-dot type-holiday"></i>Feriado</span>
+              </div>
+              <div id="calendar-grid" class="calendar-grid" aria-label="Calendário mensal"></div>
+              <p class="help-text" id="holidays-status" aria-live="polite">
+                Feriados nacionais do Brasil.
+              </p>
+            </div>
+            <div class="overview-card mt-3">
+              <div class="overview-heading">
+                <h3 id="calendar-selected-heading">Eventos do dia</h3>
+                <button
+                  type="button"
+                  id="calendar-day-add"
+                  class="btn btn-outline-secondary btn-sm"
+                >
+                  Novo compromisso nesta data
+                </button>
+              </div>
+              <div id="calendar-day-events" class="stack-list mt-3" aria-live="polite"></div>
+            </div>
+          </section>
+          <div id="app-message" class="app-message" role="status" aria-live="polite" hidden></div>
+        </main>
+      </div>
     </div>
-</body>
+    <noscript><p class="warning-banner">Ative o JavaScript para usar o Ordavik.</p></noscript>
+  </body>
 </html>
