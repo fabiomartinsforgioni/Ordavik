@@ -1,6 +1,18 @@
-/* ==================================
-   TASKFLOW | BASE E TEMAS
-================================== */
+/* ============================================================================
+   TASKFLOW | ESTILOS DA APLICAÇÃO
+   ============================================================================
+   Organização: temas -> estrutura -> navegação -> dashboard -> tarefas ->
+   filtros -> edição -> acessibilidade -> responsividade.
+
+   Convenção:
+   - Classes descrevem componentes (.task-item, .task-edit-area).
+   - Variáveis --tf-* centralizam cores, tornando os temas mais fáceis de manter.
+   - Atributos data-priority definem a cor das etiquetas de prioridade.
+   ============================================================================ */
+
+/* ---------------------------------------------------------------------------
+   1. VARIÁVEIS DE CORES PARA OS TEMAS CLARO E ESCURO
+   --------------------------------------------------------------------------- */
 
 :root,
 [data-bs-theme="light"] {
@@ -21,6 +33,7 @@
     --tf-shadow: 0 12px 38px rgba(15, 23, 42, 0.08);
 }
 
+/* O JavaScript altera data-bs-theme no elemento <html>. */
 [data-bs-theme="dark"] {
     --tf-background: #0f172a;
     --tf-surface: #1e293b;
@@ -39,7 +52,10 @@
     --tf-shadow: 0 12px 38px rgba(0, 0, 0, 0.14);
 }
 
-* { box-sizing: border-box; }
+/* border-box inclui preenchimento e borda no tamanho calculado. */
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
@@ -50,6 +66,10 @@ body {
     font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
     transition: background-color 0.2s, color 0.2s;
 }
+
+/* ---------------------------------------------------------------------------
+   2. ESTRUTURA PRINCIPAL E CABEÇALHO
+   --------------------------------------------------------------------------- */
 
 .app-shell {
     width: 100%;
@@ -62,11 +82,8 @@ body {
     box-shadow: var(--tf-shadow);
 }
 
-/* ==================================
-   CABEÇALHO
-================================== */
-
-.app-header, .app-brand {
+.app-header,
+.app-brand {
     display: flex;
     align-items: center;
 }
@@ -78,7 +95,10 @@ body {
     border-bottom: 1px solid var(--tf-border);
 }
 
-.app-brand { gap: 14px; min-width: 0; }
+.app-brand {
+    gap: 14px;
+    min-width: 0;
+}
 
 .app-logo {
     display: grid;
@@ -100,7 +120,11 @@ body {
     color: var(--tf-primary);
 }
 
-.app-title p { margin: 0; color: var(--tf-muted); font-size: 13px; }
+.app-title p {
+    margin: 0;
+    color: var(--tf-muted);
+    font-size: 13px;
+}
 
 .theme-toggle.btn {
     display: grid;
@@ -122,10 +146,11 @@ body {
     color: var(--tf-primary);
 }
 
-/* ==================================
-   NAVEGAÇÃO E CONTEÚDO
-================================== */
+/* ---------------------------------------------------------------------------
+   3. NAVEGAÇÃO E PAINÉIS
+   --------------------------------------------------------------------------- */
 
+/* Grid: barra lateral fixa + conteúdo que ocupa o restante da largura. */
 .app-layout {
     display: grid;
     grid-template-columns: 218px minmax(0, 1fr);
@@ -146,13 +171,17 @@ body {
     letter-spacing: 0.12em;
 }
 
-.sidebar-nav { display: flex; flex-direction: column; gap: 8px; }
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
 .sidebar-link {
-    width: 100%;
     display: flex;
     align-items: center;
     gap: 12px;
+    width: 100%;
     padding: 12px 14px;
     border: 0;
     border-radius: 11px;
@@ -164,8 +193,15 @@ body {
     transition: background-color 0.2s, color 0.2s;
 }
 
-.sidebar-link i { font-size: 17px; }
-.sidebar-link:hover { background: var(--tf-hover); color: var(--tf-primary); }
+.sidebar-link i {
+    font-size: 17px;
+}
+
+.sidebar-link:hover {
+    background: var(--tf-hover);
+    color: var(--tf-primary);
+}
+
 .sidebar-link.is-active,
 .sidebar-link.is-active:hover {
     background: var(--tf-active);
@@ -173,10 +209,21 @@ body {
     font-weight: 650;
 }
 
-.app-content { min-width: 0; }
-.app-view[hidden], .task-item[hidden], #empty-state[hidden] { display: none !important; }
+.app-content {
+    min-width: 0;
+}
 
-.section-heading { margin-bottom: 24px; }
+/* Bootstrap pode aplicar display aos componentes; garantimos o hidden. */
+.app-view[hidden],
+.task-item[hidden],
+#empty-state[hidden] {
+    display: none !important;
+}
+
+.section-heading {
+    margin-bottom: 24px;
+}
+
 .eyebrow {
     margin: 0 0 7px;
     color: var(--tf-primary);
@@ -184,20 +231,30 @@ body {
     font-weight: 800;
     letter-spacing: 0.11em;
 }
+
 .section-heading h2 {
     margin: 0 0 8px;
     color: var(--tf-text);
     font-size: clamp(23px, 3vw, 29px);
     font-weight: 750;
 }
-.section-heading p:last-child { margin: 0; color: var(--tf-muted); font-size: 14px; }
-.section-heading h2:focus { outline: none; }
 
-/* ==================================
-   DASHBOARD
-================================== */
+.section-heading p:last-child {
+    margin: 0;
+    color: var(--tf-muted);
+    font-size: 14px;
+}
 
-.stat-card, .overview-card {
+.section-heading h2:focus {
+    outline: none;
+}
+
+/* ---------------------------------------------------------------------------
+   4. DASHBOARD: CARDS, RESUMO E PROGRESSO
+   --------------------------------------------------------------------------- */
+
+.stat-card,
+.overview-card {
     height: 100%;
     padding: 20px;
     background: var(--tf-surface-alt);
@@ -206,38 +263,86 @@ body {
 }
 
 .stat-card {
-    min-height: 150px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+    min-height: 150px;
 }
 
 .stat-icon {
-    width: 36px;
-    height: 36px;
     display: grid;
     place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     background: var(--tf-active);
     color: var(--tf-active-text);
-    border-radius: 10px;
     font-size: 19px;
 }
-.stat-card p { margin: 2px 0 0; color: var(--tf-muted); font-size: 13px; }
-.stat-card strong { color: var(--tf-text); font-size: 30px; line-height: 1; }
-.overview-card { height: auto; }
-.overview-heading { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
-.overview-heading h3 { margin: 0; color: var(--tf-text); font-size: 17px; font-weight: 650; }
-.overview-heading span { color: var(--tf-muted); font-size: 13px; }
-.progress { height: 10px; margin: 16px 0; background: var(--tf-progress-track); }
-.progress-bar { background: linear-gradient(90deg, #2563eb, #7c3aed); transition: width 0.25s ease; }
-.overview-card > p { margin: 0 0 18px; color: var(--tf-muted); font-size: 14px; }
 
-/* ==================================
-   TAREFAS E FILTROS
-================================== */
+.stat-card p {
+    margin: 2px 0 0;
+    color: var(--tf-muted);
+    font-size: 13px;
+}
 
-.task-form { display: flex; gap: 10px; }
+.stat-card strong {
+    color: var(--tf-text);
+    font-size: 30px;
+    line-height: 1;
+}
+
+.overview-card {
+    height: auto;
+}
+
+.overview-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.overview-heading h3 {
+    margin: 0;
+    color: var(--tf-text);
+    font-size: 17px;
+    font-weight: 650;
+}
+
+.overview-heading span {
+    color: var(--tf-muted);
+    font-size: 13px;
+}
+
+.progress {
+    height: 10px;
+    margin: 16px 0;
+    background: var(--tf-progress-track);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+    transition: width 0.25s ease;
+}
+
+.overview-card > p {
+    margin: 0 0 18px;
+    color: var(--tf-muted);
+    font-size: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+   5. FORMULÁRIO DE CADASTRO, LISTA E AÇÕES
+   --------------------------------------------------------------------------- */
+
+.task-form {
+    display: flex;
+    gap: 10px;
+}
+
+/* flex: 1 deixa o campo de texto ocupar o espaço não usado pelos botões. */
 .task-input.form-control {
     flex: 1;
     min-width: 0;
@@ -247,144 +352,83 @@ body {
     background: var(--tf-surface-alt);
     color: var(--tf-text);
 }
-.task-input.form-control::placeholder { color: var(--tf-muted); opacity: 1; }
+
+.task-input.form-control::placeholder {
+    color: var(--tf-muted);
+    opacity: 1;
+}
+
 .task-input.form-control:focus {
+    border-color: #3b82f6;
     background: var(--tf-surface-alt);
     color: var(--tf-text);
-    border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
 }
-.add-button { flex-shrink: 0; border-radius: 10px; }
 
-.task-toolbar {
+/* Sobrescreve o width: 100% padrão do .form-select do Bootstrap. */
+.task-priority-select.form-select {
+    flex: 0 0 155px;
+    width: 155px;
+}
+
+.add-button {
+    flex-shrink: 0;
+    border-radius: 10px;
+}
+
+#task-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.task-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin: 30px 0 16px;
-}
-.task-toolbar h3 { margin: 0; color: var(--tf-text); font-size: 17px; font-weight: 700; }
-.task-badge {
-    display: inline-block;
-    margin-left: 5px;
-    padding: 3px 8px;
-    border-radius: 8px;
-    background: var(--tf-hover);
-    color: var(--tf-primary);
-    font-size: 12px;
-    vertical-align: middle;
-}
-.task-filters { display: flex; gap: 6px; flex-wrap: wrap; }
-.filter-button {
-    border: 1px solid transparent;
-    border-radius: 9px;
-    background: transparent;
-    color: var(--tf-muted);
-    padding: 7px 12px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 550;
-}
-.filter-button:hover { background: var(--tf-hover); color: var(--tf-primary); }
-.filter-button.is-active,
-.filter-button.is-active:hover {
-    background: var(--tf-active);
-    color: var(--tf-active-text);
-    font-weight: 700;
-}
-
-#task-list { padding: 0; margin: 0; list-style: none; }
-.task-item {
-    padding: 14px 16px;
+    gap: 10px;
     margin-bottom: 10px;
+    padding: 14px 16px;
     border: 1px solid var(--tf-border);
     border-radius: 11px;
     background: var(--tf-task);
     color: var(--tf-text);
     transition: background-color 0.2s, border-color 0.2s;
 }
-.task-label { display: flex; align-items: center; gap: 12px; width: 100%; cursor: pointer; }
+
+.task-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+}
+
 .task-checkbox {
+    flex-shrink: 0;
     width: 18px;
     height: 18px;
-    flex-shrink: 0;
     accent-color: #2563eb;
     cursor: pointer;
 }
-.task-text { flex: 1; overflow-wrap: anywhere; }
-.task-item.completed { background: var(--tf-completed); }
-.task-item.completed .task-text {
-    text-decoration: line-through;
-    color: var(--tf-completed-text);
-}
 
-.empty-state {
-    margin-top: 14px;
-    padding: 34px 16px;
-    border: 1px dashed var(--tf-border);
-    border-radius: 12px;
-    text-align: center;
-    color: var(--tf-muted);
-}
-.empty-state i { display: block; margin-bottom: 8px; font-size: 29px; }
-.empty-state p { margin: 0; font-size: 14px; }
-
-.sidebar-link:focus-visible,
-.filter-button:focus-visible,
-.theme-toggle:focus-visible,
-.btn:focus-visible,
-.task-checkbox:focus-visible {
-    outline: 3px solid var(--tf-primary);
-    outline-offset: 3px;
-}
-
-/* ==================================
-   RESPONSIVIDADE
-================================== */
-
-@media (max-width: 768px) {
-    body { padding: 16px 10px; }
-    .app-shell { padding: 22px; }
-    .app-layout { grid-template-columns: 1fr; gap: 22px; margin-top: 22px; }
-    .app-sidebar { padding: 0 0 16px; border-right: 0; border-bottom: 1px solid var(--tf-border); }
-    .sidebar-caption { margin-left: 0; }
-    .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
-    .sidebar-link { width: auto; }
-}
-
-@media (max-width: 480px) {
-    .app-shell { padding: 16px; border-radius: 16px; }
-    .app-logo { width: 45px; height: 45px; font-size: 22px; }
-    .app-title h1 { font-size: 23px; }
-    .app-title p { font-size: 11px; }
-    .task-form { flex-direction: column; }
-    .add-button { width: 100%; }
-    .task-filters { width: 100%; }
-    .filter-button { flex: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { transition-duration: 0.01ms !important; }
-}
-
-/* ==================================
-   SPRINT 02 - EXCLUSÃO DE TAREFAS
-================================== */
-
-.task-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.task-label {
+.task-text {
     flex: 1;
-    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
-.task-delete,
-.task-edit {
+/* Classe adicionada/removida pelo JavaScript ao marcar o checkbox. */
+.task-item.completed {
+    background: var(--tf-completed);
+}
+
+.task-item.completed .task-text {
+    color: var(--tf-completed-text);
+    text-decoration: line-through;
+}
+
+.task-edit,
+.task-delete {
     display: grid;
     place-items: center;
     flex-shrink: 0;
@@ -398,36 +442,155 @@ body {
     transition: background-color 0.2s, color 0.2s;
 }
 
-.task-delete:hover {
-    background: rgba(220, 53, 69, 0.12);
-    color: #dc3545;
-}
-
-.task-edit:focus-visible,
-.task-delete:focus-visible {
-    outline: 3px solid var(--tf-primary);
-    outline-offset: 3px;
-}
-
 .task-edit:hover {
     background: var(--tf-hover);
     color: var(--tf-primary);
+}
+
+.task-delete:hover {
+    background: rgba(220, 53, 69, 0.12);
+    color: #dc3545;
 }
 
 [data-bs-theme="dark"] .task-delete:hover {
     color: #ffa3ab;
 }
 
-.task-delete:focus-visible {
-    outline: 3px solid var(--tf-primary);
-    outline-offset: 3px;
+/* ---------------------------------------------------------------------------
+   6. PRIORIDADES: MESMO HTML, CORES CONFORME data-priority
+   --------------------------------------------------------------------------- */
+
+.task-priority-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
-/* ==================================
-   SPRINT 03 - EDIÇÃO DE TAREFAS
-================================== */
+/* Tema claro: baixa (azul), média (amarelo), alta (vermelho). */
+.task-priority-badge[data-priority="low"] {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
 
+.task-priority-badge[data-priority="medium"] {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.task-priority-badge[data-priority="high"] {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Tema escuro: aumenta o contraste das etiquetas. */
+[data-bs-theme="dark"] .task-priority-badge[data-priority="low"] {
+    background-color: #1e3a8a;
+    color: #dbeafe;
+}
+
+[data-bs-theme="dark"] .task-priority-badge[data-priority="medium"] {
+    background-color: #78350f;
+    color: #fef3c7;
+}
+
+[data-bs-theme="dark"] .task-priority-badge[data-priority="high"] {
+    background-color: #7f1d1d;
+    color: #fee2e2;
+}
+
+/* ---------------------------------------------------------------------------
+   7. BARRA DE FILTROS E ESTADO VAZIO
+   --------------------------------------------------------------------------- */
+
+.task-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 30px 0 16px;
+}
+
+.task-toolbar h3 {
+    margin: 0;
+    color: var(--tf-text);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.task-badge {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: var(--tf-hover);
+    color: var(--tf-primary);
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.task-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.filter-button {
+    padding: 7px 12px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--tf-muted);
+    font-size: 13px;
+    font-weight: 550;
+    cursor: pointer;
+}
+
+.filter-button:hover {
+    background: var(--tf-hover);
+    color: var(--tf-primary);
+}
+
+.filter-button.is-active,
+.filter-button.is-active:hover {
+    background: var(--tf-active);
+    color: var(--tf-active-text);
+    font-weight: 700;
+}
+
+.empty-state {
+    margin-top: 14px;
+    padding: 34px 16px;
+    border: 1px dashed var(--tf-border);
+    border-radius: 12px;
+    text-align: center;
+    color: var(--tf-muted);
+}
+
+.empty-state i {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 29px;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+   8. EDIÇÃO EM LINHA
+   --------------------------------------------------------------------------- */
+
+/* Quando o usuário edita, os controles de visualização ficam ocultos. */
 .task-item.is-editing > .task-label,
+.task-item.is-editing > .task-priority-badge,
 .task-item.is-editing > .task-edit,
 .task-item.is-editing > .task-delete {
     display: none;
@@ -445,4 +608,140 @@ body {
 .task-edit-input {
     flex: 1;
     min-width: 160px;
+}
+
+.task-edit-priority.form-select {
+    flex: 0 0 135px;
+    width: 135px;
+}
+
+/* ---------------------------------------------------------------------------
+   9. ACESSIBILIDADE
+   --------------------------------------------------------------------------- */
+
+/* focus-visible destaca o foco por teclado sem desenhar borda a cada clique. */
+.sidebar-link:focus-visible,
+.filter-button:focus-visible,
+.theme-toggle:focus-visible,
+.btn:focus-visible,
+.task-checkbox:focus-visible,
+.task-edit:focus-visible,
+.task-delete:focus-visible {
+    outline: 3px solid var(--tf-primary);
+    outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------------------
+   10. RESPONSIVIDADE
+   --------------------------------------------------------------------------- */
+
+/* Tablets: barra lateral vira uma navegação horizontal. */
+@media (max-width: 768px) {
+    body {
+        padding: 16px 10px;
+    }
+
+    .app-shell {
+        padding: 22px;
+    }
+
+    .app-layout {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        margin-top: 22px;
+    }
+
+    .app-sidebar {
+        padding: 0 0 16px;
+        border-right: 0;
+        border-bottom: 1px solid var(--tf-border);
+    }
+
+    .sidebar-caption {
+        margin-left: 0;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .sidebar-link {
+        width: auto;
+    }
+}
+
+/* Celulares: campos empilhados e cartões adaptáveis. */
+@media (max-width: 480px) {
+    .app-shell {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .app-logo {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+    }
+
+    .app-title h1 {
+        font-size: 23px;
+    }
+
+    .app-title p {
+        font-size: 11px;
+    }
+
+    .task-form {
+        flex-direction: column;
+    }
+
+    .task-priority-select.form-select {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    .add-button {
+        width: 100%;
+    }
+
+    .task-filters {
+        width: 100%;
+    }
+
+    .filter-button {
+        flex: 1;
+    }
+
+    .task-item {
+        flex-wrap: wrap;
+    }
+
+    .task-item > .task-label {
+        flex: 1 0 100%;
+    }
+
+    .task-priority-badge {
+        margin-right: auto;
+    }
+
+    .task-edit-area {
+        align-items: stretch;
+    }
+
+    .task-edit-input,
+    .task-edit-priority.form-select {
+        flex: 1 0 100%;
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+/* Respeita a preferência do sistema por animações reduzidas. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+    }
 }

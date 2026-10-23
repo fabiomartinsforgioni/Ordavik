@@ -1,68 +1,95 @@
 # ✅ TaskFlow
 
-Gerenciador de tarefas desenvolvido para praticar **HTML, CSS, JavaScript, Bootstrap, Git e GitHub**.
+Aplicação de gerenciamento de tarefas construída como projeto de aprendizado em **Engenharia de Software**. O código foi organizado e comentado para facilitar revisões de HTML, CSS, JavaScript e Git.
 
 ## 🚀 Tecnologias
 
-- HTML5 e CSS3
-- JavaScript (DOM, eventos e funções)
-- Bootstrap 5 e Bootstrap Icons (carregados por CDN)
-- Git e GitHub
+- **HTML5:** estrutura semântica e formulários acessíveis.
+- **CSS3:** componentes, Flexbox, Grid, responsividade e temas.
+- **JavaScript:** DOM, eventos, objetos, arrays, funções e `localStorage`.
+- **Bootstrap 5 e Bootstrap Icons:** carregados por CDN.
+- **Git e GitHub:** Issues, branches, commits e Pull Requests.
 
-## ⚙️ Funcionalidades implementadas
+## ✅ Funcionalidades
 
-- [x] Cadastro de tarefas
-- [x] Marcar e desmarcar tarefas como concluídas
-- [x] Excluir tarefas individualmente, atualizando filtros e indicadores
-- [x] Persistir tarefas e seus estados no `localStorage`
-- [x] Layout responsivo com navegação lateral
-- [x] Tela **Início** com total, pendentes, concluídas e barra de progresso
-- [x] Tela **Minhas tarefas** com filtros **Todas**, **Pendentes** e **Concluídas**
-- [x] Alternância entre tema claro e escuro com preferência salva no `localStorage`
-- [x] Estados vazios e melhorias de contraste e acessibilidade
+- Cadastrar tarefas com **prioridade Baixa, Média ou Alta**.
+- Exibir indicadores de prioridade nos temas claro e escuro.
+- Editar descrição **e** prioridade de tarefas já existentes.
+- Salvar ou cancelar edições; usar **Enter** para salvar e **Esc** para cancelar.
+- Marcar/desmarcar tarefas como concluídas e excluir tarefas.
+- Filtrar por **Todas, Pendentes ou Concluídas**.
+- Exibir dashboard com quantidade de tarefas e progresso.
+- Preservar tarefas, status, prioridades e tema ao atualizar a página usando `localStorage`.
+- Tratar tarefas anteriores à inclusão das prioridades, adotando **Média** por padrão.
+- Navegar entre Início e Minhas tarefas em layout responsivo.
 
-## 🧭 Próximas funcionalidades
+> **Atenção:** `localStorage` é local a cada navegador/origem. O TaskFlow não sincroniza dados entre dispositivos. Se o armazenamento estiver bloqueado, o aplicativo funciona enquanto a página permanecer aberta, mas não salva as alterações.
 
-- [ ] Edição de tarefas
-- [ ] Categorias e prioridades
-- [ ] Dashboard de produtividade avançado
-- [ ] Quadro Kanban
-
-> **Atenção:** tarefas e preferência de tema ficam no `localStorage` deste navegador, sem sincronização entre dispositivos. Se o armazenamento estiver indisponível, o TaskFlow ainda funciona durante a sessão, mas não consegue preservar as tarefas.
-
-## 📁 Estrutura
+## 📁 Arquivos
 
 ```text
 TaskFlow/
-├── index.html
-├── style.css
-├── script.js
-└── README.md
+├── index.html           # Estrutura visual e formulários
+├── style.css            # Temas e estilos responsivos
+├── script.js            # Regras e interações das tarefas
+├── README.md            # Documentação do projeto
+└── GUIA_DE_ESTUDOS.md   # Explicação dos conceitos da Sprint 03
 ```
 
 ## 💻 Como executar
 
-1. Clone ou baixe o repositório.
-2. Abra o projeto no VS Code.
-3. Execute `index.html` em um navegador com acesso à internet para carregar Bootstrap via CDN.
-4. Navegue entre **Início** e **Minhas tarefas**, adicione tarefas, altere seu status e experimente os filtros e o tema.
+1. Abra a pasta do projeto no VS Code.
+2. Abra `index.html` no navegador, preferencialmente usando a extensão **Live Server**.
+3. Mantenha a conexão com a internet para carregar o Bootstrap e seus ícones.
+4. Clique em **Minhas tarefas** e experimente o cadastro, a edição, os filtros e o tema.
 
-## 🧪 Testes manuais sugeridos
+Não é necessário instalar bibliotecas ou executar `npm install` nesta etapa.
 
-1. Adicione duas tarefas. O dashboard deve mostrar **2 no total** e **2 pendentes**.
-2. Conclua uma delas. Os indicadores devem mostrar **1 pendente** e **1 concluída**, com **50%** de progresso.
-3. Confira os filtros **Todas**, **Pendentes** e **Concluídas**.
-4. Com o filtro **Concluídas** ativo, volte a tarefa para pendente: ela deve desaparecer desse filtro.
-5. Exclua uma tarefa concluída e confira os indicadores, filtros e estado vazio.
-6. Atualize a página e confira se as tarefas restantes e seus estados continuam salvos.
-7. Exclua uma tarefa, atualize a página e confira se ela não retorna.
-8. Alterne os temas e atualize a página: o tema também deve permanecer salvo.
-9. Teste a navegação e os filtros pelo teclado, e o layout em janela estreita.
+## 🧪 Testes manuais da Sprint 03
 
-## 📈 Metodologia
+| Cenário | Resultado esperado |
+| --- | --- |
+| Criar uma tarefa com prioridade Alta | Etiqueta vermelha e prioridade salva |
+| Criar tarefas Baixa e Média | Etiquetas azul e amarela |
+| Recarregar a página | Tarefas e prioridades permanecem |
+| Editar descrição e prioridade | Ambos os valores são atualizados |
+| Cancelar a edição | Nenhuma alteração é aplicada |
+| Salvar descrição contendo apenas espaços | Validação impede salvar |
+| Pressionar Enter durante a edição | Salva, caso o texto seja válido |
+| Pressionar Esc durante a edição | Cancela, mesmo com foco na prioridade |
+| Concluir uma tarefa e editar sua prioridade | Continua concluída |
+| Excluir uma tarefa | Só a selecionada desaparece; indicadores atualizam |
+| Usar filtros e alternar tema | Lista e cores continuam coerentes |
+| Abrir em largura de celular | Formulário e edição cabem na tela |
+| Carregar tarefa antiga sem `priority` | Ela recebe prioridade Média |
 
-O projeto é desenvolvido incrementalmente, utilizando o fluxo:
+### Conferência pelo navegador
+
+Abra as ferramentas de desenvolvedor (`F12`) e consulte o Console:
+
+```javascript
+JSON.parse(localStorage.getItem("taskflow-tasks"))
+```
+
+Cada tarefa deve possuir `id`, `description`, `completed` e `priority`.
+
+## 🔧 Boas práticas aplicadas
+
+- Separação do código por responsabilidades, com documentação de funções.
+- Nomes descritivos para variáveis, constantes e funções.
+- Remoção de CSS duplicado e organização por componentes.
+- Uso de `textContent` para inserir descrições com segurança.
+- Verificação dos dados salvos antes de construir a interface.
+- Reutilização de funções de atualização de etiquetas e indicadores.
+- Acessibilidade com `aria-label`, foco por teclado e estados visíveis.
+- Estilos responsivos sem adicionar dependências.
+
+## 🧭 Fluxo de trabalho
 
 **Issue → Branch → Desenvolvimento → Testes → Commit → Push → Pull Request → Revisão → Merge.**
 
-Cada sprint também alimenta um guia de estudos com os conceitos e boas práticas aprendidos.
+Esta versão revisada foi preparada **antes do commit**. Os arquivos devem ser testados no ambiente local e conferidos com `git diff` antes de qualquer publicação.
+
+## 📚 Material complementar
+
+Veja o arquivo [`GUIA_DE_ESTUDOS.md`](GUIA_DE_ESTUDOS.md) para entender as principais funções, métodos e decisões técnicas utilizadas nesta sprint.
